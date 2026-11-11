@@ -1,35 +1,54 @@
 import { useEffect, useRef, useState } from 'react';
 import { AnimatePresence, motion, useMotionValueEvent, useScroll } from 'framer-motion';
-import { sectionMeta, viewerProfiles, type ProfileId, type SectionId } from '../data/portfolio';
+import { sectionMeta, type ProfileId, type SectionId } from '../data/portfolio';
 import { useSmoothScroll } from '../hooks/smoothScroll';
-import { SeriesMark } from './Poster';
-import { ProfileAvatar } from './ProfileSelector';
 import { EASE } from './fx';
 
-export default function Navbar({ order, profileId, onSwitch }: { order: SectionId[]; profileId: ProfileId; onSwitch: (id: ProfileId) => void }) {
+type NavbarProps = {
+  order: SectionId[];
+  profileId?: ProfileId;
+  onSwitch?: (id: ProfileId) => void;
+};
+
+export default function Navbar({ order }: NavbarProps) {
   const { scrollY } = useScroll();
-  const [solid, setSolid] = useState(false);
-  const [hidden, setHidden] = useState(false);
-  const [menu, setMenu] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
   const [mobileNav, setMobileNav] = useState(false);
   const [active, setActive] = useState<string>('top');
+  const [navItems, setNavItems] = useState<{ id: string; label: string }[]>([{ id: 'top', label: 'Home' }]);
   const { scrollTo } = useSmoothScroll();
-  const menuRef = useRef<HTMLDivElement>(null);
+  const headerRef = useRef<HTMLElement>(null);
 
   useMotionValueEvent(scrollY, 'change', (y) => {
-    const prev = scrollY.getPrevious() ?? 0;
-    setSolid(y > 40);
-    setHidden(y > 400 && y > prev && !menu && !mobileNav);
+    setScrolled(y > 24);
   });
 
+  // Only list section links that actually exist on the page right now
   useEffect(() => {
-    const ids = ['top', ...order];
+    const extras: { id: string; label: string }[] = [
+      { id: 'reels', label: 'Reels' },
+      { id: 'showcase', label: 'Archive' },
+      { id: 'deck', label: 'Deck' },
+      { id: 'instagram', label: 'Instagram' },
+    ].filter((item) => Boolean(document.getElementById(item.id)));
+
+    const present = order
+      .filter((id) => Boolean(document.getElementById(id)))
+      .map((id) => ({ id, label: sectionMeta[id].nav }));
+
+    const items = [{ id: 'top', label: 'Home' }, ...extras, ...present];
+    setNavItems(items);
+
+    const ids = [...items.map((i) => i.id), 'contact'];
     const io = new IntersectionObserver(
       (entries) => {
-        entries.forEach((e) => e.isIntersecting && setActive(e.target.id));
+        entries.forEach((e) => {
+          if (e.isIntersecting) setActive(e.target.id);
+        });
       },
-      { rootMargin: '-45% 0px -50% 0px' },
+      { rootMargin: '-40% 0px -50% 0px' },
     );
+
     ids.forEach((id) => {
       const el = document.getElementById(id);
       if (el) io.observe(el);
@@ -38,147 +57,151 @@ export default function Navbar({ order, profileId, onSwitch }: { order: SectionI
   }, [order]);
 
   useEffect(() => {
-    if (!menu) return;
-    const close = (e: PointerEvent) => {
-      if (!menuRef.current?.contains(e.target as Node)) setMenu(false);
+    if (!mobileNav) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setMobileNav(false);
     };
-    window.addEventListener('pointerdown', close);
-    return () => window.removeEventListener('pointerdown', close);
-  }, [menu]);
+    const onOutside = (e: PointerEvent) => {
+      if (!headerRef.current?.contains(e.target as Node)) setMobileNav(false);
+    };
+    window.addEventListener('keydown', onKey);
+    window.addEventListener('pointerdown', onOutside);
+    return () => {
+      window.removeEventListener('keydown', onKey);
+      window.removeEventListener('pointerdown', onOutside);
+    };
+  }, [mobileNav]);
 
   const go = (id: string) => {
     setMobileNav(false);
     scrollTo(`#${id}`, { offset: id === 'top' ? 0 : -64 });
   };
 
-  const current = viewerProfiles.find((p) => p.id === profileId)!;
-
   return (
-    <motion.header
-      className="fixed inset-x-0 top-0 z-[60]"
-      animate={{ y: hidden ? '-100%' : '0%' }}
-      transition={{ duration: 0.45, ease: EASE }}
+    <header
+      ref={headerRef}
+      className={`fixed inset-x-0 top-0 z-[60] transition-colors duration-300 ${
+        scrolled || mobileNav
+          ? 'border-b border-white/[0.08] bg-ink/80 backdrop-blur-xl'
+          : 'border-b border-transparent bg-gradient-to-b from-black/80 via-black/35 to-transparent'
+      }`}
     >
-      <div
-        className={`gutter flex h-16 items-center justify-between gap-6 transition-[background,backdrop-filter] duration-500 md:h-[72px] ${
-          solid || mobileNav ? 'bg-ink/80 backdrop-blur-xl' : 'bg-gradient-to-b from-black/80 to-transparent'
-        }`}
-      >
-        <div className="flex items-center gap-8 lg:gap-10">
-          <button type="button" onClick={() => go('top')} className="text-[22px]" aria-label="Back to top">
-            <SeriesMark />
-          </button>
-          <nav className="hidden items-center gap-6 lg:flex" aria-label="Sections">
-            <NavLink label="Home" active={active === 'top'} onClick={() => go('top')} />
-            {order.map((id) => (
-              <NavLink key={id} label={sectionMeta[id].nav} active={active === id} onClick={() => go(id)} />
-            ))}
-          </nav>
-        </div>
+      <div className="gutter flex h-16 items-center justify-between gap-6 md:h-[72px]">
+        {/* Brand Logo */}
+        <button
+          type="button"
+          onClick={() => go('top')}
+          aria-label="Career HQ — Back to top"
+          className="group flex shrink-0 items-center text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-crimson/70 rounded-sm"
+        >
+          <img
+            src="/assets/careerhq-logo.png"
+            alt="Career HQ — Connecting Dots Worldwide"
+            width={998}
+            height={276}
+            decoding="async"
+            className="h-8 w-auto select-none object-contain transition-opacity duration-200 group-hover:opacity-90 sm:h-9 md:h-10"
+          />
+        </button>
 
-        <div className="flex items-center gap-3">
+        {/* Right-aligned Clean Editorial Navigation */}
+        <div className="flex items-center gap-4 lg:gap-6">
+          <nav aria-label="Primary navigation" className="hidden items-center gap-4 lg:flex xl:gap-6">
+            {navItems.map((item) => {
+              const isActive = active === item.id;
+              return (
+                <button
+                  key={item.id}
+                  type="button"
+                  onClick={() => go(item.id)}
+                  aria-current={isActive ? 'location' : undefined}
+                  className={`relative whitespace-nowrap py-1 text-[13px] font-medium tracking-wide transition-colors ${
+                    isActive ? 'text-bone' : 'text-mist hover:text-bone'
+                  }`}
+                >
+                  {item.label}
+                  {isActive && (
+                    <motion.span
+                      layoutId="nav-line"
+                      transition={{ duration: 0.35, ease: EASE }}
+                      className="absolute inset-x-0 -bottom-0.5 h-[1.5px] bg-crimson"
+                    />
+                  )}
+                </button>
+              );
+            })}
+          </nav>
+
           <button
             type="button"
             onClick={() => go('contact')}
-            className="hidden rounded-full border border-white/15 px-4 py-1.5 text-xs font-semibold tracking-[0.14em] text-bone transition hover:border-crimson-2 hover:text-crimson-2 sm:block"
+            className={`hidden rounded-full border px-4 py-1.5 text-xs font-medium tracking-[0.12em] transition lg:inline-flex ${
+              active === 'contact'
+                ? 'border-bone bg-bone text-ink'
+                : 'border-white/20 text-bone hover:border-bone hover:bg-bone hover:text-ink'
+            }`}
           >
-            LET&apos;S BUILD
+            Let&apos;s Build
           </button>
-          <div className="relative" ref={menuRef}>
-            <button
-              type="button"
-              onClick={() => setMenu((m) => !m)}
-              aria-haspopup="menu"
-              aria-expanded={menu}
-              aria-label={`Viewing as ${current.name}. Switch profile`}
-              className="flex items-center gap-2 rounded-md p-1"
-            >
-              <ProfileAvatar id={profileId} size="sm" />
-              <motion.span animate={{ rotate: menu ? 180 : 0 }} className="text-[10px] text-mist">
-                ▼
-              </motion.span>
-            </button>
-            <AnimatePresence>
-              {menu && (
-                <motion.div
-                  role="menu"
-                  initial={{ opacity: 0, y: -8, scale: 0.97 }}
-                  animate={{ opacity: 1, y: 0, scale: 1 }}
-                  exit={{ opacity: 0, y: -8, scale: 0.97 }}
-                  transition={{ duration: 0.25, ease: EASE }}
-                  className="absolute right-0 top-12 w-60 origin-top-right rounded-xl border border-white/10 bg-ink-2/95 p-2 shadow-2xl backdrop-blur-xl"
-                >
-                  <p className="px-3 pb-2 pt-1 text-[10px] font-semibold tracking-[0.24em] text-smoke">WHO&apos;S WATCHING?</p>
-                  {viewerProfiles.map((p) => (
-                    <button
-                      key={p.id}
-                      role="menuitem"
-                      type="button"
-                      onClick={() => {
-                        onSwitch(p.id);
-                        setMenu(false);
-                      }}
-                      className={`flex w-full items-center gap-3 rounded-lg px-3 py-2 text-left transition hover:bg-white/5 ${p.id === profileId ? 'bg-white/[0.06]' : ''}`}
-                    >
-                      <ProfileAvatar id={p.id} size="sm" />
-                      <span>
-                        <span className="block text-sm text-bone">{p.name}</span>
-                        <span className="block text-[11px] text-smoke">{p.blurb}</span>
-                      </span>
-                    </button>
-                  ))}
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </div>
+
+          {/* Mobile Menu Toggle */}
           <button
             type="button"
-            className="flex h-10 w-10 flex-col items-center justify-center gap-1.5 lg:hidden"
+            onClick={() => setMobileNav((v) => !v)}
             aria-label={mobileNav ? 'Close menu' : 'Open menu'}
             aria-expanded={mobileNav}
-            onClick={() => setMobileNav((v) => !v)}
+            className="flex h-10 w-10 flex-col items-end justify-center gap-1.5 lg:hidden"
           >
-            <motion.span className="block h-0.5 w-5 bg-bone" animate={{ rotate: mobileNav ? 45 : 0, y: mobileNav ? 4 : 0 }} />
-            <motion.span className="block h-0.5 w-5 bg-bone" animate={{ rotate: mobileNav ? -45 : 0, y: mobileNav ? -4 : 0 }} />
+            <motion.span
+              className="block h-[1.5px] w-6 bg-bone"
+              animate={{ rotate: mobileNav ? 45 : 0, y: mobileNav ? 3.75 : 0 }}
+              transition={{ duration: 0.2 }}
+            />
+            <motion.span
+              className="block h-[1.5px] w-4 bg-bone"
+              animate={{
+                width: mobileNav ? 24 : 16,
+                rotate: mobileNav ? -45 : 0,
+                y: mobileNav ? -3.75 : 0,
+              }}
+              transition={{ duration: 0.2 }}
+            />
           </button>
         </div>
       </div>
 
+      {/* Clean Mobile Slide-Down Sheet */}
       <AnimatePresence>
         {mobileNav && (
           <motion.nav
-            aria-label="Sections"
-            className="gutter border-b border-white/5 bg-ink/95 pb-6 pt-2 backdrop-blur-xl lg:hidden"
-            initial={{ clipPath: 'inset(0 0 100% 0)' }}
-            animate={{ clipPath: 'inset(0 0 0% 0)' }}
-            exit={{ clipPath: 'inset(0 0 100% 0)' }}
-            transition={{ duration: 0.45, ease: EASE }}
+            aria-label="Mobile navigation"
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: 'auto' }}
+            exit={{ opacity: 0, height: 0 }}
+            transition={{ duration: 0.3, ease: EASE }}
+            className="gutter overflow-hidden border-t border-white/[0.06] bg-ink/95 backdrop-blur-xl md:hidden"
           >
-            {[{ id: 'top', label: 'Home' }, ...order.map((id) => ({ id, label: sectionMeta[id].nav })), { id: 'contact', label: "Let's Build" }].map((l, i) => (
-              <motion.button
-                key={l.id}
-                type="button"
-                onClick={() => go(l.id)}
-                initial={{ opacity: 0, x: -12 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.05 * i }}
-                className={`block w-full py-3 text-left font-display text-3xl tracking-wide ${active === l.id ? 'text-crimson-2' : 'text-bone'}`}
-              >
-                {l.label}
-              </motion.button>
-            ))}
+            <div className="flex flex-col gap-1 py-4">
+              {[...navItems, { id: 'contact', label: "Let's Build" }].map((item) => {
+                const isActive = active === item.id;
+                return (
+                  <button
+                    key={item.id}
+                    type="button"
+                    onClick={() => go(item.id)}
+                    className={`flex items-center justify-between py-2.5 text-left text-base font-medium transition-colors ${
+                      isActive ? 'text-crimson-2' : 'text-bone/85 hover:text-bone'
+                    }`}
+                  >
+                    <span>{item.label}</span>
+                    {isActive && <span className="h-1.5 w-1.5 rounded-full bg-crimson" />}
+                  </button>
+                );
+              })}
+            </div>
           </motion.nav>
         )}
       </AnimatePresence>
-    </motion.header>
-  );
-}
-
-function NavLink({ label, active, onClick }: { label: string; active: boolean; onClick: () => void }) {
-  return (
-    <button type="button" onClick={onClick} className={`relative text-[13px] font-medium transition ${active ? 'text-bone' : 'text-mist hover:text-bone'}`}>
-      {label}
-      {active && <motion.span layoutId="nav-underline" className="absolute -bottom-1.5 left-0 right-0 h-[2px] rounded bg-crimson" />}
-    </button>
+    </header>
   );
 }

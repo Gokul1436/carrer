@@ -3,7 +3,7 @@ import { motion, useScroll, useTransform } from 'framer-motion';
 import { profile } from '../data/portfolio';
 import { useSmoothScroll } from '../hooks/smoothScroll';
 import { EASE, Magnetic, Particles } from './fx';
-import { SeriesMark } from './Poster';
+import SectionGridBackdrop from './ui/SectionGridBackdrop';
 
 export default function FinalCTA({ onReplay }: { onReplay: () => void }) {
   const ref = useRef<HTMLElement>(null);
@@ -22,7 +22,15 @@ export default function FinalCTA({ onReplay }: { onReplay: () => void }) {
 
   return (
     <section id="contact" ref={ref} className="relative flex min-h-[100svh] flex-col items-center justify-center overflow-hidden px-4 py-24 text-center">
-      <div aria-hidden className="absolute inset-0 bg-[radial-gradient(60%_50%_at_50%_60%,rgba(229,19,43,0.18),transparent_70%)]" />
+      <SectionGridBackdrop
+        color="#ff3d5a"
+        cellSize={52}
+        glow={0.65}
+        opacity={0.44}
+        fade={0.75}
+        rippleInterval={3.2}
+        radialGlow="radial-gradient(60% 50% at 50% 60%, rgba(229, 19, 43, 0.18), transparent 70%)"
+      />
       <Particles count={36} />
 
       <motion.p
@@ -90,7 +98,15 @@ export default function FinalCTA({ onReplay }: { onReplay: () => void }) {
 
       <footer className="absolute inset-x-0 bottom-0 px-4 pb-[max(1.5rem,env(safe-area-inset-bottom))] text-center">
         <div className="mb-2 text-base">
-          <SeriesMark />
+          <img
+            src="/assets/careerhq-logo.png"
+            alt="Career HQ — Connecting Dots Worldwide"
+            width={998}
+            height={276}
+            loading="lazy"
+            decoding="async"
+            className="h-7 w-auto object-contain opacity-90"
+          />
         </div>
         <p className="text-[11px] leading-relaxed text-smoke">
           © {new Date().getFullYear()} {profile.displayName}. A personal, streaming-inspired portfolio — not affiliated with any streaming service.

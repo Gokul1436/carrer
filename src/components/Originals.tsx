@@ -4,6 +4,7 @@ import { profile, projects, type Project } from '../data/portfolio';
 import { useDesktop, useReducedMotionPref } from '../hooks/useMedia';
 import { EASE, RevealText } from './fx';
 import ProjectCard from './ProjectCard';
+import SectionGridBackdrop from './ui/SectionGridBackdrop';
 
 /**
  * ORIGINALS — on desktop the section pins and scrolls sideways like a title sequence.
@@ -77,15 +78,22 @@ function PinnedOriginals({ onOpen }: { onOpen: (p: Project) => void }) {
   return (
     <div ref={wrap} style={{ height: `calc(100vh + ${dist}px)` }} className="relative">
       <div className="sticky top-0 flex h-screen flex-col justify-center overflow-hidden">
-        <div aria-hidden className="absolute inset-0 bg-[radial-gradient(50%_60%_at_70%_50%,rgba(229,19,43,0.10),transparent_70%)]" />
-        <motion.div ref={track} style={{ x }} className="gutter relative flex items-center gap-8 pr-[12vw]" data-cursor="drag">
+        <SectionGridBackdrop
+          color="#ff3d5a"
+          cellSize={54}
+          glow={0.68}
+          opacity={0.5}
+          rippleInterval={3.2}
+          radialGlow="radial-gradient(50% 60% at 70% 50%, rgba(229,19,43,0.12), transparent 70%)"
+        />
+        <motion.div ref={track} style={{ x }} className="gutter relative z-10 flex items-center gap-8 pr-[12vw]" data-cursor="drag">
           <Intro />
           {projects.map((p, i) => (
             <ProjectCard key={p.id} project={p} index={i} onOpen={() => onOpen(p)} />
           ))}
           <Outro />
         </motion.div>
-        <div className="gutter absolute inset-x-0 bottom-8 flex items-center gap-4">
+        <div className="gutter absolute inset-x-0 bottom-8 z-10 flex items-center gap-4">
           <span className="text-[10px] font-bold tracking-[0.3em] text-smoke">ORIGINALS</span>
           <div className="h-[2px] flex-1 overflow-hidden rounded bg-white/10">
             <motion.div className="h-full origin-left bg-crimson" style={{ scaleX: bar }} />
@@ -98,12 +106,19 @@ function PinnedOriginals({ onOpen }: { onOpen: (p: Project) => void }) {
 
 function RailOriginals({ onOpen }: { onOpen: (p: Project) => void }) {
   return (
-    <div className="py-6">
-      <div className="gutter mb-6">
+    <div className="relative overflow-hidden py-6">
+      <SectionGridBackdrop
+        color="#ff3d5a"
+        cellSize={50}
+        glow={0.65}
+        opacity={0.48}
+        rippleInterval={3.2}
+      />
+      <div className="gutter relative z-10 mb-6">
         <Intro />
       </div>
       <motion.div
-        className="rail gutter flex snap-x snap-mandatory gap-4 overflow-x-auto pb-6"
+        className="rail gutter relative z-10 flex snap-x snap-mandatory gap-4 overflow-x-auto pb-6"
         initial={{ opacity: 0, x: 60 }}
         whileInView={{ opacity: 1, x: 0 }}
         viewport={{ once: true }}

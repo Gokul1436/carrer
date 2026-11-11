@@ -10,11 +10,11 @@ export const profile = {
   fullName: 'Gokulnath',
   displayName: 'Gokulnath',
   firstName: 'Gokul',
-  seriesTag: 'Deveoloper',
+  seriesTag: 'DEVELOPER',
   /** Fictional studio card shown at the very start of the opening sequence. */
   originalLabel: 'ORIGINAL',
-  role: 'Softwarae Developer',
-  tagline: ['Softwear Developer', 'AI / ML', 'Java'],
+  role: 'Software Developer',
+  tagline: ['Software Developer', 'AI / ML', 'Java'],
   intro:
     'A B.Tech Artificial Intelligence & Machine Learning student (CGPA 9.10) and full-stack developer building AI-powered platforms, payment systems and multi-tenant SaaS with Java, Python, React, Node.js and Docker.',
   location: 'Surampalem, Andhra Pradesh',
@@ -578,28 +578,28 @@ export const viewerProfiles: {
     name: 'Sushmita',
     blurb: 'The full series, in order',
     color: '#e5132b',
-    order: ['about', 'journey', 'originals', 'picks', 'skills', 'moments', 'story'],
+    order: ['about', /* 'journey', */ 'originals', 'picks', /* 'skills', */ 'moments', 'story'],
   },
   {
     id: 'recruiter',
     name: 'Recruiter',
     blurb: 'Resume, achievements & skills first',
     color: '#4cc9ff',
-    order: ['story', 'moments', 'skills', 'originals', 'about', 'journey', 'picks'],
+    order: ['story', 'moments', /* 'skills', */ 'originals', 'about', /* 'journey', */ 'picks'],
   },
   {
     id: 'developer',
     name: 'Developer',
     blurb: 'Projects, stack & GitHub first',
     color: '#46e3a8',
-    order: ['originals', 'skills', 'journey', 'moments', 'about', 'picks', 'story'],
+    order: ['originals', /* 'skills', 'journey', */ 'moments', 'about', 'picks', 'story'],
   },
   {
     id: 'creative',
     name: 'Creative',
     blurb: 'The story arc & highlights first',
     color: '#ffb547',
-    order: ['journey', 'picks', 'originals', 'moments', 'about', 'skills', 'story'],
+    order: [/* 'journey', */ 'picks', 'originals', 'moments', 'about', /* 'skills', */ 'story'],
   },
 ];
 
@@ -612,3 +612,49 @@ export const sectionMeta: Record<SectionId, { nav: string; card: string; meta: s
   moments: { nav: 'Moments', card: 'My Achievements', meta: `${achievements.length} Moments • ${certifications.length} Certifications`, palette: crimson },
   story: { nav: 'Resume', card: 'The Full Story', meta: 'Resume • View & download', palette: violet },
 };
+
+export type VideoReel = {
+  id: string;
+  episode: string;
+  title: string;
+  meta: string;
+  videoUrl: string;
+  posterUrl: string;
+  previewUrl: string;
+  palette: Palette;
+};
+
+const REEL_1 = 'https://res.cloudinary.com/dq5bryk8r/video/upload/v1794385103/Learn_what_lasts_not_what_is_popular_BENITA.mp4';
+const REEL_2 = 'https://res.cloudinary.com/dq5bryk8r/video/upload/v1794385103/benita_2_secret_AI_tool.mp4';
+const REEL_3 = 'https://res.cloudinary.com/dq5bryk8r/video/upload/v1794385115/ranking_for_common_study_method_BENITA.mp4';
+const REEL_4 = 'https://res.cloudinary.com/dq5bryk8r/video/upload/v1794385124/Benita_If_you_don_t_want_your_son_to_struggle_in_future_teach_these_things.mp4';
+
+const makeReel = (
+  index: number,
+  videoUrl: string,
+  title: string,
+  meta: string,
+  palette: Palette,
+): VideoReel => ({
+  id: `reel-${index}`,
+  episode: `Episode ${String(index).padStart(2, '0')}`,
+  title,
+  meta,
+  videoUrl,
+  posterUrl: videoUrl
+    .replace('/video/upload/', '/video/upload/so_1,f_jpg,q_auto,w_720/')
+    .replace(/\.mp4$/, '.jpg'),
+  previewUrl: videoUrl.replace('/video/upload/', '/video/upload/q_auto,w_480/'),
+  palette,
+});
+
+export const videoReels: VideoReel[] = [
+  makeReel(1, REEL_1, 'Learn What Lasts', 'Reel • 9:16 Vertical', violet),
+  makeReel(2, REEL_2, 'Secret AI Tool', 'Reel • AI Showcase', crimson),
+  makeReel(3, REEL_3, 'Study Method Ranking', 'Reel • Retention Cut', amber),
+  makeReel(4, REEL_4, 'Future-Ready Skills', 'Reel • Storytelling', ocean),
+  makeReel(5, REEL_1, 'What Lasts — Cut II', 'Edit • Pacing & Sound', jade),
+  makeReel(6, REEL_2, 'AI Tool — Cut II', 'Edit • Motion & Hook', crimson),
+  makeReel(7, REEL_3, 'Study Ranking — Cut II', 'Edit • Captions & Flow', violet),
+  makeReel(8, REEL_4, 'Future Skills — Cut II', 'Edit • Full Production', amber),
+];
