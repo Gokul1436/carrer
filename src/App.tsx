@@ -3,7 +3,6 @@ import { AnimatePresence, LayoutGroup, motion } from 'framer-motion';
 import { viewerProfiles, type ProfileId, type Project, type SectionId, type VideoReel } from './data/portfolio';
 import { SmoothScrollProvider, useSmoothScroll } from './hooks/smoothScroll';
 import CustomCursor from './components/CustomCursor';
-import CinematicLoader from './components/CinematicLoader';
 import OpeningSequence from './components/OpeningSequence';
 import Navbar from './components/Navbar';
 import Hero from './components/Hero';
@@ -29,7 +28,7 @@ const ProjectModal = lazy(() => import('./components/ProjectModal'));
 const ResumeModal = lazy(() => import('./components/ResumeModal'));
 const VideoModal = lazy(() => import('./components/VideoModal'));
 
-type Stage = 'loading' | 'opening' | 'home';
+type Stage = 'opening' | 'home';
 
 const STORAGE_KEY = 'sushmita-series-profile';
 
@@ -52,7 +51,7 @@ export default function App() {
 
 function Series() {
   const stored = readStoredProfile();
-  const [stage, setStage] = useState<Stage>('loading');
+  const [stage, setStage] = useState<Stage>('opening');
   const [profileId, setProfileId] = useState<ProfileId>(stored ?? 'sushmita');
   const [playing, setPlaying] = useState(false);
   const [project, setProject] = useState<Project | null>(null);
@@ -132,15 +131,6 @@ function Series() {
       <CustomCursor />
 
       <AnimatePresence>
-        {stage === 'loading' && (
-          <CinematicLoader
-            key="loader"
-            onReady={() => {
-              window.scrollTo(0, 0);
-              setStage('opening');
-            }}
-          />
-        )}
         {stage === 'opening' && (
           <OpeningSequence
             key="opening"
@@ -170,7 +160,7 @@ function Series() {
               </Scene>
             ))}
             <InstagramCard />
-            <FinalCTA onReplay={() => setStage('loading')} />
+            <FinalCTA onReplay={() => setStage('opening')} />
           </main>
         </motion.div>
       )}

@@ -25,6 +25,7 @@ export const profile = {
   },
   resumePdf: '/assets/Sushmita_Dasari_Resume.pdf',
   bannerVideo: '/assets/video/banner-video-2.mp4',
+  openingImage: '/assets/images/benita.png',
   portrait: {
     src: '/assets/portrait-720.webp',
     srcSet: '/assets/portrait-420.webp 420w, /assets/portrait-720.webp 720w, /assets/portrait-1100.webp 1100w',

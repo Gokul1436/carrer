@@ -32,9 +32,6 @@ export default function Hero({ onPlay, onResume, profileId }: { onPlay: () => vo
   const my = useMotionValue(0);
   const px = useSpring(mx, { stiffness: 60, damping: 18 });
   const py = useSpring(my, { stiffness: 60, damping: 18 });
-  const imgRotY = useTransform(px, [-1, 1], [-4, 4]);
-  const imgRotX = useTransform(py, [-1, 1], [3, -3]);
-  const imgShiftX = useTransform(px, [-1, 1], [-10, 10]);
   const chipX = useTransform(px, [-1, 1], [18, -18]);
   const chipY = useTransform(py, [-1, 1], [12, -12]);
   const glowX = useTransform(px, [-1, 1], ['-6%', '6%']);
@@ -63,9 +60,9 @@ export default function Hero({ onPlay, onResume, profileId }: { onPlay: () => vo
         my.set((e.clientY / window.innerHeight) * 2 - 1);
       }}
     >
-      {/* atmosphere + banner-video-2 + interactive SoftAurora backdrop */}
+      {/* banner-video-2 main hero stage + subtle interactive SoftAurora accent */}
       <ParallaxLayer yPercent={[0, -14]} start="top top" end="bottom top" scrub={0.8} className="pointer-events-none absolute inset-0">
-        <div className="absolute inset-0">
+        <motion.div className="absolute inset-0" style={{ y: imgY, scale: imgScale, opacity: fade }}>
           <video
             src={profile.bannerVideo}
             autoPlay={!reduced}
@@ -74,9 +71,8 @@ export default function Hero({ onPlay, onResume, profileId }: { onPlay: () => vo
             playsInline
             preload="auto"
             aria-hidden
-            className="h-full w-full object-cover opacity-50 brightness-[0.72] contrast-[1.08]"
+            className="h-full w-full object-cover opacity-90 contrast-[1.06]"
           />
-          <div className="pointer-events-none absolute inset-0 bg-ink/45" />
           <div className="pointer-events-none absolute inset-0 mix-blend-screen">
             <SoftAurora
               speed={0.55}
@@ -88,16 +84,16 @@ export default function Hero({ onPlay, onResume, profileId }: { onPlay: () => vo
               bandSpread={1.1}
               spectrum={0.42}
               tilt={-8}
-              opacity={0.55}
+              opacity={0.22}
               enableMouseInteraction={fine}
               mouseInfluence={0.22}
             />
           </div>
           <div className="pointer-events-none absolute inset-x-0 bottom-0 h-44 bg-gradient-to-t from-ink to-transparent" />
-        </div>
+        </motion.div>
         <motion.div aria-hidden className="absolute inset-0" style={{ x: glowX }}>
-          <div className="absolute right-[-10%] top-[-10%] h-[90vh] w-[80vw] rounded-full bg-[radial-gradient(closest-side,rgba(229,19,43,0.32),rgba(229,19,43,0.06)_55%,transparent)] blur-2xl lg:right-[-4%] lg:w-[60vw]" />
-          <div className="absolute bottom-[-20%] left-[-10%] h-[70vh] w-[60vw] rounded-full bg-[radial-gradient(closest-side,rgba(90,20,120,0.22),transparent)] blur-2xl" />
+          <div className="absolute right-[-10%] top-[-10%] h-[90vh] w-[80vw] rounded-full bg-[radial-gradient(closest-side,rgba(229,19,43,0.22),rgba(229,19,43,0.04)_55%,transparent)] blur-2xl lg:right-[-4%] lg:w-[60vw]" />
+          <div className="absolute bottom-[-20%] left-[-10%] h-[70vh] w-[60vw] rounded-full bg-[radial-gradient(closest-side,rgba(90,20,120,0.16),transparent)] blur-2xl" />
         </motion.div>
       </ParallaxLayer>
       <Particles className="z-[1]" />
@@ -107,46 +103,26 @@ export default function Hero({ onPlay, onResume, profileId }: { onPlay: () => vo
         <span className="light-streak left-[55%] top-[44%] w-[30vw]" style={{ animationDelay: '5.2s' }} />
       </div>
 
-      {/* portrait */}
+      {/* floating UI chips over the right banner stage (no portrait image) */}
       <motion.div
-        className="absolute inset-x-0 top-12 z-[2] flex h-[64svh] items-end justify-center sm:h-[70svh] lg:bottom-0 lg:left-auto lg:right-[3vw] lg:top-20 lg:h-auto lg:w-[54vw] xl:right-[6vw] xl:w-[48vw]"
-        style={{ y: imgY, scale: imgScale, opacity: fade }}
+        className="pointer-events-none absolute inset-x-0 top-12 z-[2] hidden h-[70svh] md:block lg:bottom-0 lg:left-auto lg:right-[3vw] lg:top-20 lg:h-auto lg:w-[46vw] xl:right-[6vw]"
+        style={{ y: imgY, opacity: fade }}
       >
-        <motion.div
-          className="relative h-full w-full lg:h-[86vh]"
-          style={{ rotateY: imgRotY, rotateX: imgRotX, x: imgShiftX, transformPerspective: 1200 }}
-          initial={{ clipPath: 'inset(100% -30% -10% -30%)', opacity: 0 }}
-          animate={{ clipPath: 'inset(-30% -30% -10% -30%)', opacity: 1 }}
-          transition={{ duration: 1.6, ease: EASE, delay: 0.1 }}
-        >
-          {/* rim light ring */}
-          <div aria-hidden className="absolute bottom-[8%] left-1/2 h-[78%] w-[78%] -translate-x-1/2 rounded-full border border-crimson-2/20 shadow-[0_0_120px_rgba(229,19,43,0.35),inset_0_0_80px_rgba(229,19,43,0.18)]" />
-          <img
-            src={profile.portrait.src}
-            srcSet={profile.portrait.srcSet}
-            sizes="(max-width: 1024px) 100vw, 54vw"
-            alt={profile.portrait.alt}
-
-            className="absolute bottom-0 left-1/2 h-full w-auto max-w-none -translate-x-1/2 object-contain object-bottom drop-shadow-[0_30px_60px_rgba(0,0,0,0.6)] [mask-image:linear-gradient(to_bottom,black_62%,transparent_97%)]"
-          />
-          {/* crimson rim light on the image edge */}
-          <div aria-hidden className="pointer-events-none absolute inset-0 bg-[radial-gradient(60%_50%_at_80%_30%,rgba(255,61,90,0.16),transparent_70%)] mix-blend-screen" />
-
-          {/* floating UI chips */}
+        <div className="relative h-full w-full lg:h-[86vh]">
           {floating.map((f, i) => (
             <FloatChip key={f.text} {...f} index={i} mx={chipX} my={chipY} />
           ))}
-        </motion.div>
+        </div>
       </motion.div>
 
       {/* readability gradients */}
       <div aria-hidden className="absolute inset-x-0 top-[40svh] z-[3] h-[36svh] bg-gradient-to-b from-transparent via-ink/70 to-ink lg:hidden" />
-      <div aria-hidden className="absolute inset-0 z-[3] hidden bg-[linear-gradient(90deg,var(--color-ink)_0%,rgba(7,7,10,0.7)_32%,transparent_58%)] lg:block" />
+      <div aria-hidden className="absolute inset-0 z-[3] hidden bg-[linear-gradient(90deg,var(--color-ink)_0%,rgba(7,7,10,0.72)_34%,transparent_62%)] lg:block" />
       <div aria-hidden className="absolute inset-x-0 bottom-0 z-[3] h-48 bg-gradient-to-t from-ink to-transparent" />
 
       {/* copy */}
       <motion.div
-        className="gutter relative z-[4] flex min-h-[100svh] flex-col justify-end pb-16 pt-[54svh] sm:pb-20 lg:max-w-[52vw] lg:justify-center lg:pb-0 lg:pt-24"
+        className="gutter relative z-[4] flex min-h-[100svh] flex-col justify-end pb-16 pt-[38svh] sm:pb-20 sm:pt-[42svh] lg:max-w-[52vw] lg:justify-center lg:pb-0 lg:pt-24"
         style={{ y: textY, opacity: fade }}
         variants={container}
         initial="hidden"
