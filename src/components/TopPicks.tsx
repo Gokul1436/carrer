@@ -4,6 +4,7 @@ import { topPicks } from '../data/portfolio';
 import { EASE, SectionHeading } from './fx';
 import { PosterBackdrop } from './Poster';
 import { RailButtons } from './Rail';
+import ParallaxLayer from './ui/ParallaxLayer';
 
 export default function TopPicks() {
   const rail = useRef<HTMLDivElement>(null);
@@ -21,13 +22,15 @@ export default function TopPicks() {
               viewport={{ once: true, margin: '0px -5% 0px 0px' }}
               transition={{ duration: 0.7, delay: Math.min(i, 5) * 0.06, ease: EASE }}
             >
-              <span
-                aria-hidden
-                className="text-outline -mr-6 select-none font-display leading-[0.78] transition duration-500 group-hover:[-webkit-text-stroke-color:rgba(255,61,90,0.85)] sm:-mr-8"
-                style={{ fontSize: i === 9 ? 'clamp(9rem, 22vw, 15rem)' : 'clamp(11rem, 26vw, 19rem)', letterSpacing: i === 9 ? '-0.06em' : 0 }}
-              >
-                {i + 1}
-              </span>
+              <ParallaxLayer yPercent={[14, -14]} scrub={1} className="-mr-6 sm:-mr-8">
+                <span
+                  aria-hidden
+                  className="text-outline block select-none font-display leading-[0.78] transition duration-500 group-hover:[-webkit-text-stroke-color:rgba(255,61,90,0.85)]"
+                  style={{ fontSize: i === 9 ? 'clamp(9rem, 22vw, 15rem)' : 'clamp(11rem, 26vw, 19rem)', letterSpacing: i === 9 ? '-0.06em' : 0 }}
+                >
+                  {i + 1}
+                </span>
+              </ParallaxLayer>
               <div className="relative z-10 h-[85%] w-[150px] overflow-hidden rounded-lg shadow-[-12px_0_30px_rgba(0,0,0,0.7)] ring-1 ring-white/10 transition duration-500 group-hover:-translate-y-2 group-hover:ring-white/30 sm:w-[180px]">
                 <div className="absolute inset-0 transition-transform duration-700 group-hover:scale-110">
                   <PosterBackdrop palette={pick.palette} />

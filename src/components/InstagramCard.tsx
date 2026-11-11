@@ -1,13 +1,16 @@
+import { useLayoutEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { EASE } from './fx';
+import { GSAP_EASE, gsap } from '../lib/gsap';
+import GsapSplitText from './ui/GsapSplitText';
 import SectionGridBackdrop from './ui/SectionGridBackdrop';
 
 const INSTAGRAM_URL = 'https://www.instagram.com/careerwithbeni/';
 
 const STATS = [
-  { label: 'Posts', value: '119', icon: 'posts' },
-  { label: 'Followers', value: '48.5K', icon: 'followers' },
-  { label: 'Following', value: '1', icon: 'following' },
+  { label: 'Posts', value: '119', target: 119, decimals: 0, suffix: '', icon: 'posts' },
+  { label: 'Followers', value: '48.5K', target: 48.5, decimals: 1, suffix: 'K', icon: 'followers' },
+  { label: 'Following', value: '1', target: 1, decimals: 0, suffix: '', icon: 'following' },
 ] as const;
 
 function StatIcon({ type }: { type: (typeof STATS)[number]['icon'] }) {
@@ -50,9 +53,74 @@ function InstagramGlyph({ className }: { className?: string }) {
 }
 
 export default function InstagramCard() {
+  const sectionRef = useRef<HTMLElement>(null);
+
+  useLayoutEffect(() => {
+    const el = sectionRef.current;
+    if (!el) return;
+
+    const mm = gsap.matchMedia();
+    const ctx = gsap.context(() => {
+      mm.add('(prefers-reduced-motion: no-preference)', () => {
+        const portraitWrap = el.querySelector<HTMLElement>('[data-insta-portrait]');
+        if (portraitWrap) {
+          gsap.fromTo(
+            portraitWrap,
+            { yPercent: -5, scale: 1.07 },
+            {
+              yPercent: 5,
+              scale: 1.07,
+              ease: 'none',
+              scrollTrigger: { trigger: el, start: 'top bottom', end: 'bottom top', scrub: 0.9 },
+            },
+          );
+        }
+
+        const revealItems = el.querySelectorAll<HTMLElement>('[data-insta-reveal]');
+        if (revealItems.length) {
+          gsap.fromTo(
+            revealItems,
+            { y: 20, opacity: 0 },
+            {
+              y: 0,
+              opacity: 1,
+              duration: 0.7,
+              stagger: 0.08,
+              ease: GSAP_EASE,
+              scrollTrigger: { trigger: el, start: 'top 78%', once: true },
+            },
+          );
+        }
+
+        const counterNodes = el.querySelectorAll<HTMLElement>('[data-insta-count]');
+        counterNodes.forEach((node) => {
+          const target = Number(node.dataset.target ?? '0');
+          const decimals = Number(node.dataset.decimals ?? '0');
+          const suffix = node.dataset.suffix ?? '';
+          const proxy = { val: 0 };
+          gsap.to(proxy, {
+            val: target,
+            duration: 1.25,
+            ease: 'power2.out',
+            scrollTrigger: { trigger: el, start: 'top 78%', once: true },
+            onUpdate: () => {
+              node.textContent = `${decimals > 0 ? proxy.val.toFixed(decimals) : Math.round(proxy.val)}${suffix}`;
+            },
+          });
+        });
+      });
+    }, el);
+
+    return () => {
+      ctx.revert();
+      mm.revert();
+    };
+  }, []);
+
   return (
     <section
       id="instagram"
+      ref={sectionRef}
       aria-label="On Instagram — @careerwithbeni"
       className="relative isolate overflow-hidden bg-ink py-20 sm:py-28"
     >
@@ -111,13 +179,15 @@ export default function InstagramCard() {
                 aria-hidden
                 className="pointer-events-none absolute left-1/2 top-1/2 h-[210px] w-[210px] -translate-x-1/2 -translate-y-1/2 rounded-full border border-crimson-2/20"
               />
-              <img
-                src="/assets/benita-insta-portrait.jpg"
-                alt="Benita Samson (@careerwithbeni)"
-                loading="lazy"
-                decoding="async"
-                className="absolute inset-0 z-[1] h-full w-full object-cover object-[center_18%] transition-transform duration-700 hover:scale-[1.03]"
-              />
+              <div data-insta-portrait className="absolute inset-0 z-[1] will-change-transform">
+                <img
+                  src="/assets/benita-insta-portrait.jpg"
+                  alt="Benita Samson (@careerwithbeni)"
+                  loading="lazy"
+                  decoding="async"
+                  className="h-full w-full object-cover object-[center_18%] transition-transform duration-700 hover:scale-[1.03]"
+                />
+              </div>
               <div
                 aria-hidden
                 className="pointer-events-none absolute inset-0 z-[2] bg-gradient-to-t from-[#0d070a]/75 via-transparent to-transparent"
@@ -138,7 +208,7 @@ export default function InstagramCard() {
               {/* Main Title + Gradient Instagram Badge */}
               <div className="mt-5 flex flex-wrap items-center gap-3.5 sm:gap-4">
                 <h2 className="font-sans text-[clamp(2rem,4.6vw,3.35rem)] font-extrabold leading-[1.05] tracking-tight text-bone">
-                  On{' '}
+                  <GsapSplitText text="On" as="span" mode="reveal" stagger={0.05} />{' '}
                   <span className="bg-gradient-to-r from-crimson-2 via-[#fb7185] to-crimson bg-clip-text text-transparent">
                     Instagram
                   </span>
@@ -160,7 +230,7 @@ export default function InstagramCard() {
               </p>
 
               {/* Profile Handle & Name */}
-              <div className="mt-5 border-l-2 border-crimson-2 pl-4">
+              <div data-insta-reveal className="mt-5 border-l-2 border-crimson-2 pl-4">
                 <a
                   href={INSTAGRAM_URL}
                   target="_blank"
@@ -188,7 +258,7 @@ export default function InstagramCard() {
               </div>
 
               {/* 3 Stat Pills */}
-              <div className="mt-5 grid grid-cols-3 gap-2.5 sm:gap-3.5">
+              <div data-insta-reveal className="mt-5 grid grid-cols-3 gap-2.5 sm:gap-3.5">
                 {STATS.map((stat) => (
                   <div
                     key={stat.label}
@@ -198,7 +268,13 @@ export default function InstagramCard() {
                       <StatIcon type={stat.icon} />
                     </div>
                     <div className="min-w-0 leading-tight">
-                      <div className="text-base font-bold tracking-tight text-bone sm:text-lg">
+                      <div
+                        data-insta-count
+                        data-target={stat.target}
+                        data-decimals={stat.decimals}
+                        data-suffix={stat.suffix}
+                        className="text-base font-bold tracking-tight text-bone sm:text-lg"
+                      >
                         {stat.value}
                       </div>
                       <div className="text-[11px] text-mist sm:text-xs">{stat.label}</div>
@@ -208,7 +284,7 @@ export default function InstagramCard() {
               </div>
 
               {/* Bio Lines */}
-              <div className="mt-5 space-y-1 border-l-2 border-crimson-2 pl-4 text-xs leading-relaxed text-bone/85 sm:text-sm">
+              <div data-insta-reveal className="mt-5 space-y-1 border-l-2 border-crimson-2 pl-4 text-xs leading-relaxed text-bone/85 sm:text-sm">
                 <p>Stop choosing the wrong degree</p>
                 <p>Fixing career paths for 5k+ students</p>
                 <p className="text-bone/90">
@@ -217,7 +293,7 @@ export default function InstagramCard() {
               </div>
 
               {/* Follow CTA */}
-              <div className="mt-6">
+              <div data-insta-reveal className="mt-6">
                 <a
                   href={INSTAGRAM_URL}
                   target="_blank"

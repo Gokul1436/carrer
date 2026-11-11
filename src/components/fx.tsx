@@ -1,6 +1,8 @@
-import { useEffect, useRef, type ReactNode, type PointerEvent as RPointerEvent } from 'react';
+import { useEffect, useLayoutEffect, useRef, type ReactNode, type PointerEvent as RPointerEvent } from 'react';
 import { motion, useMotionValue, useSpring, useTransform, type HTMLMotionProps } from 'framer-motion';
 import { useFinePointer, useReducedMotionPref } from '../hooks/useMedia';
+import { GSAP_EASE, gsap } from '../lib/gsap';
+import GsapSplitText from './ui/GsapSplitText';
 
 export const EASE = [0.22, 1, 0.36, 1] as const;
 
@@ -73,52 +75,69 @@ export function Tilt({
   );
 }
 
-/** Word-by-word blur-to-focus reveal for headings. */
+/** GSAP ScrollTrigger masked word-by-word reveal for section headings & editorial titles. */
 export function RevealText({ text, className = '', delay = 0, as = 'span' }: { text: string; className?: string; delay?: number; as?: 'span' | 'h2' | 'h3' | 'p' }) {
-  const Tag = motion[as];
-  const words = text.split(' ');
-  return (
-    <Tag
-      className={className}
-      initial="hidden"
-      whileInView="show"
-      viewport={{ once: true, margin: '-4% 0px' }}
-      transition={{ staggerChildren: 0.06, delayChildren: delay }}
-      aria-label={text}
-    >
-      {words.map((w, i) => (
-        <span key={i} aria-hidden className="inline-block overflow-hidden pb-[0.08em] align-bottom">
-          <motion.span
-            className="inline-block"
-            variants={{
-              hidden: { y: '105%', opacity: 0, filter: 'blur(8px)' },
-              show: { y: '0%', opacity: 1, filter: 'blur(0px)', transition: { duration: 0.9, ease: EASE } },
-            }}
-          >
-            {w}
-            {i < words.length - 1 ? ' ' : ''}
-          </motion.span>
-        </span>
-      ))}
-    </Tag>
-  );
+  return <GsapSplitText text={text} as={as} mode="reveal" delay={delay} className={className} />;
 }
 
-/** Small kicker + big title used at the top of every section. */
+/** Small kicker + big title used at the top of every section with GSAP line-draw reveal. */
 export function SectionHeading({ kicker, title, aside }: { kicker: string; title: string; aside?: ReactNode }) {
+  const kickerRef = useRef<HTMLDivElement>(null);
+
+  useLayoutEffect(() => {
+    const el = kickerRef.current;
+    if (!el) return;
+
+    const mm = gsap.matchMedia();
+    const ctx = gsap.context(() => {
+      mm.add('(prefers-reduced-motion: no-preference)', () => {
+        const line = el.querySelector<HTMLElement>('[data-kicker-line]');
+        const label = el.querySelector<HTMLElement>('[data-kicker-label]');
+        if (line) {
+          gsap.fromTo(
+            line,
+            { scaleX: 0, transformOrigin: 'left center' },
+            {
+              scaleX: 1,
+              duration: 0.75,
+              ease: GSAP_EASE,
+              scrollTrigger: { trigger: el, start: 'top 90%', once: true },
+            },
+          );
+        }
+        if (label) {
+          gsap.fromTo(
+            label,
+            { opacity: 0, x: -14 },
+            {
+              opacity: 1,
+              x: 0,
+              duration: 0.7,
+              delay: 0.1,
+              ease: GSAP_EASE,
+              scrollTrigger: { trigger: el, start: 'top 90%', once: true },
+            },
+          );
+        }
+      });
+    }, el);
+
+    return () => {
+      ctx.revert();
+      mm.revert();
+    };
+  }, [kicker]);
+
   return (
     <div className="gutter mb-6 flex flex-wrap items-end justify-between gap-4 md:mb-9">
       <div>
-        <motion.div
-          initial={{ opacity: 0, x: -16 }}
-          whileInView={{ opacity: 1, x: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.7, ease: EASE }}
+        <div
+          ref={kickerRef}
           className="mb-2 flex items-center gap-3 text-[11px] font-semibold uppercase tracking-[0.32em] text-crimson-2"
         >
-          <span className="h-px w-8 bg-crimson-2" />
-          {kicker}
-        </motion.div>
+          <span data-kicker-line className="h-px w-8 bg-crimson-2 will-change-transform" />
+          <span data-kicker-label>{kicker}</span>
+        </div>
         <RevealText as="h2" text={title} className="font-display text-[clamp(2.4rem,6vw,5rem)] leading-[0.9] tracking-wide text-bone" />
       </div>
       {aside}

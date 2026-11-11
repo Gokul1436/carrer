@@ -1,8 +1,9 @@
-import { useRef } from 'react';
-import { motion } from 'framer-motion';
+import { useLayoutEffect, useRef } from 'react';
 import { achievements, certifications } from '../data/portfolio';
-import { EASE, SectionHeading, Tilt } from './fx';
+import { SectionHeading, Tilt } from './fx';
 import { RailButtons } from './Rail';
+import { GSAP_EASE, gsap } from '../lib/gsap';
+import ParallaxLayer from './ui/ParallaxLayer';
 
 function Laurel({ side }: { side: 'l' | 'r' }) {
   return (
@@ -16,22 +17,66 @@ function Laurel({ side }: { side: 'l' | 'r' }) {
 }
 
 export default function Achievements() {
+  const wrapRef = useRef<HTMLDivElement>(null);
   const rail = useRef<HTMLDivElement>(null);
   const issuers = Array.from(new Set(certifications.map((c) => c.issuer)));
 
+  useLayoutEffect(() => {
+    const el = wrapRef.current;
+    if (!el) return;
+
+    const mm = gsap.matchMedia();
+    const ctx = gsap.context(() => {
+      mm.add('(prefers-reduced-motion: no-preference)', () => {
+        const awards = el.querySelectorAll<HTMLElement>('[data-award-card]');
+        const certs = el.querySelectorAll<HTMLElement>('[data-cert-card]');
+
+        if (awards.length) {
+          gsap.fromTo(
+            awards,
+            { y: 48, opacity: 0, rotateX: 16, transformPerspective: 1200 },
+            {
+              y: 0,
+              opacity: 1,
+              rotateX: 0,
+              duration: 0.85,
+              stagger: 0.08,
+              ease: GSAP_EASE,
+              scrollTrigger: { trigger: awards[0], start: 'top 86%', once: true },
+            },
+          );
+        }
+
+        if (certs.length) {
+          gsap.fromTo(
+            certs,
+            { y: 24, opacity: 0 },
+            {
+              y: 0,
+              opacity: 1,
+              duration: 0.55,
+              stagger: 0.045,
+              ease: GSAP_EASE,
+              scrollTrigger: { trigger: certs[0], start: 'top 90%', once: true },
+            },
+          );
+        }
+      });
+    }, el);
+
+    return () => {
+      ctx.revert();
+      mm.revert();
+    };
+  }, []);
+
   return (
-    <>
+    <div ref={wrapRef}>
       <SectionHeading kicker="Awards season" title="Top Moments" />
 
       <div className="gutter grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 [perspective:1400px]">
-        {achievements.map((a, i) => (
-          <motion.div
-            key={a.id}
-            initial={{ opacity: 0, y: 50, rotateX: 18 }}
-            whileInView={{ opacity: 1, y: 0, rotateX: 0 }}
-            viewport={{ once: true, margin: '-8% 0px' }}
-            transition={{ duration: 0.9, delay: i * 0.08, ease: EASE }}
-          >
+        {achievements.map((a) => (
+          <div key={a.id} data-award-card>
             <Tilt max={8} className="group h-full rounded-2xl">
               <article className="relative flex h-full min-h-[340px] flex-col items-center overflow-hidden rounded-2xl bg-[radial-gradient(120%_80%_at_50%_0%,#2a1f10,#0d0b08_60%,#07070a)] px-5 pb-6 pt-8 text-center ring-1 ring-[#d9b46a]/20 transition duration-500 group-hover:ring-[#d9b46a]/60">
                 <div aria-hidden className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[#d9b46a]/70 to-transparent" />
@@ -59,7 +104,7 @@ export default function Achievements() {
                 )}
               </article>
             </Tilt>
-          </motion.div>
+          </div>
         ))}
       </div>
 
@@ -69,34 +114,33 @@ export default function Achievements() {
           <h3 className="font-sans text-lg font-semibold text-bone sm:text-2xl">
             Certified <span className="text-mist">· {certifications.length} credentials</span>
           </h3>
-          <p className="text-xs text-smoke">{issuers.join(' · ')}</p>
+          <ParallaxLayer xPercent={[-4, 4]} scrub={1} desktopOnly>
+            <p className="text-xs text-smoke">{issuers.join(' · ')}</p>
+          </ParallaxLayer>
         </div>
         <div className="group/rail relative">
           <div ref={rail} className="rail gutter flex snap-x gap-3 overflow-x-auto py-5">
-            {certifications.map((c, i) => (
-              <motion.a
+            {certifications.map((c) => (
+              <a
                 key={c.name}
+                data-cert-card
                 href={c.link}
                 target="_blank"
                 rel="noreferrer"
                 data-cursor="link"
                 className="group relative flex w-[230px] shrink-0 snap-start flex-col justify-between rounded-xl bg-ink-2 p-4 ring-1 ring-white/10 transition hover:-translate-y-1 hover:ring-white/30"
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.5, delay: Math.min(i, 6) * 0.04, ease: EASE }}
               >
                 <div className="flex items-center justify-between">
                   <span className="text-[10px] font-bold uppercase tracking-[0.24em] text-crimson-2">{c.issuer}</span>
                   <span className="text-sm text-smoke transition group-hover:text-bone">↗</span>
                 </div>
                 <p className="mt-6 text-sm font-medium leading-snug text-bone">{c.name}</p>
-              </motion.a>
+              </a>
             ))}
           </div>
           <RailButtons rail={rail} />
         </div>
       </div>
-    </>
+    </div>
   );
 }

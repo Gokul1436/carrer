@@ -1,5 +1,6 @@
 import { createContext, useCallback, useContext, useEffect, useRef, type ReactNode } from 'react';
 import Lenis from 'lenis';
+import { gsap, ScrollTrigger, refreshScrollTriggersSoon } from '../lib/gsap';
 import { useReducedMotionPref } from './useMedia';
 
 type ScrollApi = {
@@ -19,14 +20,21 @@ export function SmoothScrollProvider({ children }: { children: ReactNode }) {
     if (reduced) return;
     const lenis = new Lenis({ duration: 1.15, smoothWheel: true, easing: (t) => 1 - Math.pow(1 - t, 4) });
     lenisRef.current = lenis;
-    let raf = 0;
-    const loop = (time: number) => {
-      lenis.raf(time);
-      raf = requestAnimationFrame(loop);
+
+    // Sync Lenis directly with GSAP's ticker so ScrollTrigger never drifts or jitters.
+    const onLenisScroll = () => ScrollTrigger.update();
+    lenis.on('scroll', onLenisScroll);
+
+    const tick = (time: number) => {
+      lenis.raf(time * 1000);
     };
-    raf = requestAnimationFrame(loop);
+    gsap.ticker.add(tick);
+    gsap.ticker.lagSmoothing(0);
+    refreshScrollTriggersSoon();
+
     return () => {
-      cancelAnimationFrame(raf);
+      gsap.ticker.remove(tick);
+      lenis.off('scroll', onLenisScroll);
       lenis.destroy();
       lenisRef.current = null;
     };

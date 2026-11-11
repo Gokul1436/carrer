@@ -3,6 +3,7 @@ import { AnimatePresence, LayoutGroup, motion } from 'framer-motion';
 import { viewerProfiles, type ProfileId, type Project, type SectionId, type VideoReel } from './data/portfolio';
 import { SmoothScrollProvider, useSmoothScroll } from './hooks/smoothScroll';
 import CustomCursor from './components/CustomCursor';
+import CinematicLoader from './components/CinematicLoader';
 import OpeningSequence from './components/OpeningSequence';
 import Navbar from './components/Navbar';
 import Hero from './components/Hero';
@@ -20,6 +21,7 @@ import ResumeSection from './components/ResumeViewer';
 import InstagramCard from './components/InstagramCard';
 import FinalCTA from './components/FinalCTA';
 import { EASE } from './components/fx';
+import { refreshScrollTriggersSoon } from './lib/gsap';
 
 // Overlays are only needed on demand — split them out of the first load.
 const PlayIntro = lazy(() => import('./components/PlayIntro'));
@@ -27,7 +29,7 @@ const ProjectModal = lazy(() => import('./components/ProjectModal'));
 const ResumeModal = lazy(() => import('./components/ResumeModal'));
 const VideoModal = lazy(() => import('./components/VideoModal'));
 
-type Stage = 'opening' | 'home';
+type Stage = 'loading' | 'opening' | 'home';
 
 const STORAGE_KEY = 'sushmita-series-profile';
 
@@ -50,7 +52,7 @@ export default function App() {
 
 function Series() {
   const stored = readStoredProfile();
-  const [stage, setStage] = useState<Stage>(stored ? 'home' : 'opening');
+  const [stage, setStage] = useState<Stage>('loading');
   const [profileId, setProfileId] = useState<ProfileId>(stored ?? 'sushmita');
   const [playing, setPlaying] = useState(false);
   const [project, setProject] = useState<Project | null>(null);
@@ -61,6 +63,11 @@ function Series() {
   const { scrollTo, lock, unlock } = useSmoothScroll();
 
   const order = viewerProfiles.find((p) => p.id === profileId)!.order;
+
+  useEffect(() => {
+    if (stage !== 'home') return;
+    refreshScrollTriggersSoon();
+  }, [stage, profileId]);
 
   useEffect(() => {
     if (stage === 'home') return;
@@ -125,6 +132,15 @@ function Series() {
       <CustomCursor />
 
       <AnimatePresence>
+        {stage === 'loading' && (
+          <CinematicLoader
+            key="loader"
+            onReady={() => {
+              window.scrollTo(0, 0);
+              setStage('opening');
+            }}
+          />
+        )}
         {stage === 'opening' && (
           <OpeningSequence
             key="opening"
@@ -154,7 +170,7 @@ function Series() {
               </Scene>
             ))}
             <InstagramCard />
-            <FinalCTA onReplay={() => setStage('opening')} />
+            <FinalCTA onReplay={() => setStage('loading')} />
           </main>
         </motion.div>
       )}

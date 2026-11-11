@@ -47,6 +47,26 @@ export default function OpeningSequence({ onDone }: { onDone: () => void }) {
       <motion.div className="absolute inset-x-0 top-0 z-30 h-[7vh] bg-black" initial={{ y: 0 }} animate={{ y: beat >= 6 ? '-100%' : 0 }} transition={{ duration: 1.2, ease: EASE }} />
       <motion.div className="absolute inset-x-0 bottom-0 z-30 h-[7vh] bg-black" initial={{ y: 0 }} animate={{ y: beat >= 6 ? '100%' : 0 }} transition={{ duration: 1.2, ease: EASE }} />
 
+      {/* ambient banner-video-2 backdrop carried seamlessly from the preloader */}
+      <motion.div
+        aria-hidden
+        className="absolute inset-0 z-0"
+        initial={{ opacity: 0.65, scale: 1.04 }}
+        animate={{ opacity: beat >= 4 ? 0.42 : 0.62, scale: 1 }}
+        transition={{ duration: 1.8, ease: EASE }}
+      >
+        <video
+          src={profile.bannerVideo}
+          autoPlay={!reduced}
+          muted
+          loop
+          playsInline
+          preload="auto"
+          className="h-full w-full object-cover brightness-[0.65] contrast-[1.08]"
+        />
+        <div className="absolute inset-0 bg-[radial-gradient(68%_60%_at_50%_45%,rgba(7,7,10,0.28),rgba(7,7,10,0.92)_100%)]" />
+      </motion.div>
+
       {/* projector flicker light */}
       <motion.div
         aria-hidden

@@ -1,10 +1,12 @@
 import { useRef } from 'react';
 import { motion, useMotionValue, useScroll, useSpring, useTransform } from 'framer-motion';
 import { achievements, certifications, education, profile, projects, type ProfileId } from '../data/portfolio';
-import { useFinePointer } from '../hooks/useMedia';
+import { useFinePointer, useReducedMotionPref } from '../hooks/useMedia';
 import { useSmoothScroll } from '../hooks/smoothScroll';
 import { EASE, Magnetic, Particles } from './fx';
 import { SeriesMark } from './Poster';
+import ParallaxLayer from './ui/ParallaxLayer';
+import SoftAurora from './ui/SoftAurora';
 
 const container = { hidden: {}, show: { transition: { staggerChildren: 0.09, delayChildren: 0.25 } } };
 const item = {
@@ -15,6 +17,7 @@ const item = {
 export default function Hero({ onPlay, onResume, profileId }: { onPlay: () => void; onResume: () => void; profileId: ProfileId }) {
   const ref = useRef<HTMLElement>(null);
   const fine = useFinePointer();
+  const reduced = useReducedMotionPref();
   const { scrollTo } = useSmoothScroll();
 
   const { scrollYProgress } = useScroll({ target: ref, offset: ['start start', 'end start'] });
@@ -60,11 +63,43 @@ export default function Hero({ onPlay, onResume, profileId }: { onPlay: () => vo
         my.set((e.clientY / window.innerHeight) * 2 - 1);
       }}
     >
-      {/* atmosphere */}
-      <motion.div aria-hidden className="absolute inset-0" style={{ x: glowX }}>
-        <div className="absolute right-[-10%] top-[-10%] h-[90vh] w-[80vw] rounded-full bg-[radial-gradient(closest-side,rgba(229,19,43,0.38),rgba(229,19,43,0.08)_55%,transparent)] blur-2xl lg:right-[-4%] lg:w-[60vw]" />
-        <div className="absolute bottom-[-20%] left-[-10%] h-[70vh] w-[60vw] rounded-full bg-[radial-gradient(closest-side,rgba(90,20,120,0.25),transparent)] blur-2xl" />
-      </motion.div>
+      {/* atmosphere + banner-video-2 + interactive SoftAurora backdrop */}
+      <ParallaxLayer yPercent={[0, -14]} start="top top" end="bottom top" scrub={0.8} className="pointer-events-none absolute inset-0">
+        <div className="absolute inset-0">
+          <video
+            src={profile.bannerVideo}
+            autoPlay={!reduced}
+            muted
+            loop
+            playsInline
+            preload="auto"
+            aria-hidden
+            className="h-full w-full object-cover opacity-50 brightness-[0.72] contrast-[1.08]"
+          />
+          <div className="pointer-events-none absolute inset-0 bg-ink/45" />
+          <div className="pointer-events-none absolute inset-0 mix-blend-screen">
+            <SoftAurora
+              speed={0.55}
+              scale={1.45}
+              brightness={0.95}
+              color1="#ff3d5a"
+              color2="#8b0d3b"
+              bandHeight={0.54}
+              bandSpread={1.1}
+              spectrum={0.42}
+              tilt={-8}
+              opacity={0.55}
+              enableMouseInteraction={fine}
+              mouseInfluence={0.22}
+            />
+          </div>
+          <div className="pointer-events-none absolute inset-x-0 bottom-0 h-44 bg-gradient-to-t from-ink to-transparent" />
+        </div>
+        <motion.div aria-hidden className="absolute inset-0" style={{ x: glowX }}>
+          <div className="absolute right-[-10%] top-[-10%] h-[90vh] w-[80vw] rounded-full bg-[radial-gradient(closest-side,rgba(229,19,43,0.32),rgba(229,19,43,0.06)_55%,transparent)] blur-2xl lg:right-[-4%] lg:w-[60vw]" />
+          <div className="absolute bottom-[-20%] left-[-10%] h-[70vh] w-[60vw] rounded-full bg-[radial-gradient(closest-side,rgba(90,20,120,0.22),transparent)] blur-2xl" />
+        </motion.div>
+      </ParallaxLayer>
       <Particles className="z-[1]" />
       <div aria-hidden className="absolute inset-0 z-[1] overflow-hidden">
         <span className="light-streak left-[40%] top-[22%] w-[50vw]" style={{ animationDelay: '1.2s' }} />

@@ -1,17 +1,51 @@
-import { useRef } from 'react';
-import { motion, useScroll, useTransform } from 'framer-motion';
+import { useLayoutEffect, useRef } from 'react';
+import { motion } from 'framer-motion';
 import { profile } from '../data/portfolio';
 import { useSmoothScroll } from '../hooks/smoothScroll';
 import { EASE, Magnetic, Particles } from './fx';
-import SectionGridBackdrop from './ui/SectionGridBackdrop';
+import { gsap } from '../lib/gsap';
+import GsapSplitText from './ui/GsapSplitText';
+import ParallaxLayer from './ui/ParallaxLayer';
+import SoftAurora from './ui/SoftAurora';
 
 export default function FinalCTA({ onReplay }: { onReplay: () => void }) {
   const ref = useRef<HTMLElement>(null);
+  const headlineRef = useRef<HTMLHeadingElement>(null);
   const { scrollTo } = useSmoothScroll();
-  const { scrollYProgress } = useScroll({ target: ref, offset: ['start end', 'start 0.2'] });
-  const spacing = useTransform(scrollYProgress, [0, 1], ['0.6em', '0.02em']);
-  const blur = useTransform(scrollYProgress, [0, 1], ['blur(16px)', 'blur(0px)']);
-  const opacity = useTransform(scrollYProgress, [0.1, 0.9], [0, 1]);
+
+  useLayoutEffect(() => {
+    const section = ref.current;
+    const headline = headlineRef.current;
+    if (!section || !headline) return;
+
+    const mm = gsap.matchMedia();
+    const ctx = gsap.context(() => {
+      mm.add('(prefers-reduced-motion: no-preference)', () => {
+        gsap.fromTo(
+          headline,
+          { letterSpacing: '0.42em', opacity: 0.2, scale: 1.07, filter: 'blur(12px)' },
+          {
+            letterSpacing: '0.02em',
+            opacity: 1,
+            scale: 1,
+            filter: 'blur(0px)',
+            ease: 'none',
+            scrollTrigger: {
+              trigger: section,
+              start: 'top 88%',
+              end: 'top 25%',
+              scrub: 0.9,
+            },
+          },
+        );
+      });
+    }, section);
+
+    return () => {
+      ctx.revert();
+      mm.revert();
+    };
+  }, []);
 
   const ctas = [
     { label: "Let's Build", href: `mailto:${profile.email}?subject=${encodeURIComponent("Let's build something")}`, primary: true, cursor: 'play' },
@@ -22,15 +56,25 @@ export default function FinalCTA({ onReplay }: { onReplay: () => void }) {
 
   return (
     <section id="contact" ref={ref} className="relative flex min-h-[100svh] flex-col items-center justify-center overflow-hidden px-4 py-24 text-center">
-      <SectionGridBackdrop
-        color="#ff3d5a"
-        cellSize={52}
-        glow={0.65}
-        opacity={0.44}
-        fade={0.75}
-        rippleInterval={3.2}
-        radialGlow="radial-gradient(60% 50% at 50% 60%, rgba(229, 19, 43, 0.18), transparent 70%)"
-      />
+      <div aria-hidden className="pointer-events-none absolute inset-0 z-0 bg-ink">
+        <SoftAurora
+          speed={0.5}
+          scale={1.55}
+          brightness={0.95}
+          color1="#ff8a9a"
+          color2="#e5132b"
+          bandHeight={0.45}
+          bandSpread={1.15}
+          spectrum={0.4}
+          tilt={5}
+          opacity={0.58}
+          enableMouseInteraction
+          mouseInfluence={0.24}
+        />
+        <div className="absolute inset-0 bg-[radial-gradient(60%_50%_at_50%_60%,rgba(229,19,43,0.16),transparent_70%)]" />
+        <div className="absolute inset-x-0 top-0 h-28 bg-gradient-to-b from-ink to-transparent" />
+        <div className="absolute inset-x-0 bottom-0 h-28 bg-gradient-to-t from-ink to-transparent" />
+      </div>
       <Particles count={36} />
 
       <motion.p
@@ -41,23 +85,26 @@ export default function FinalCTA({ onReplay }: { onReplay: () => void }) {
       >
         The Next Episode
       </motion.p>
-      <motion.h2
-        className="relative font-display leading-[0.85] text-bone"
-        style={{ fontSize: 'clamp(3.4rem, 13vw, 12rem)', letterSpacing: spacing, filter: blur, opacity }}
-      >
-        TO BE CONTINUED…
-      </motion.h2>
+      <ParallaxLayer yPercent={[10, -10]} scrub={1}>
+        <h2
+          ref={headlineRef}
+          className="relative font-display leading-[0.85] text-bone will-change-transform"
+          style={{ fontSize: 'clamp(3.4rem, 13vw, 12rem)' }}
+        >
+          TO BE CONTINUED…
+        </h2>
+      </ParallaxLayer>
 
-      <motion.div
-        className="relative mt-12"
-        initial={{ opacity: 0, y: 30 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true, margin: '-10% 0px' }}
-        transition={{ duration: 0.9, ease: EASE, delay: 0.2 }}
-      >
-        <p className="font-sans text-2xl font-semibold tracking-[0.2em] text-bone sm:text-3xl">{profile.displayName.toUpperCase()}</p>
+      <div className="relative mt-12">
+        <GsapSplitText
+          as="p"
+          text={profile.displayName.toUpperCase()}
+          mode="reveal"
+          stagger={0.07}
+          className="font-sans text-2xl font-semibold tracking-[0.2em] text-bone sm:text-3xl"
+        />
         <p className="mt-2 text-xs font-semibold tracking-[0.4em] text-mist sm:text-sm">{profile.role.toUpperCase()}</p>
-      </motion.div>
+      </div>
 
       <motion.div
         className="relative mt-10 flex flex-wrap justify-center gap-3"

@@ -242,11 +242,7 @@ export default function PerspectiveTunnelHero({
           transformStyle: 'preserve-3d',
         }}
       >
-        {/* Subtle Crimson Atmospheric Grid & Spotlight */}
-        <div
-          aria-hidden
-          className="pointer-events-none absolute inset-0 bg-[radial-gradient(rgba(244,241,236,0.12)_1px,transparent_1px)] opacity-35 [background-size:28px_28px] [mask-image:radial-gradient(ellipse_70%_70%_at_50%_50%,#000_55%,transparent_100%)]"
-        />
+        {/* Clean Crimson Radial Spotlight without background line/grid overlays */}
         <div
           aria-hidden
           className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(229,19,43,0.22)_0%,transparent_70%)]"
@@ -255,16 +251,6 @@ export default function PerspectiveTunnelHero({
         {/* Top & Bottom Soft Vignettes for Seamless Page Blending */}
         <div aria-hidden className="pointer-events-none absolute inset-x-0 top-0 h-28 bg-gradient-to-b from-ink to-transparent" />
         <div aria-hidden className="pointer-events-none absolute inset-x-0 bottom-0 h-28 bg-gradient-to-t from-ink to-transparent" />
-
-        {/* Depth Ring Guides */}
-        <div
-          aria-hidden
-          className="pointer-events-none absolute h-[48vmin] w-[48vmin] rounded-full border border-crimson/20"
-        />
-        <div
-          aria-hidden
-          className="pointer-events-none absolute h-[76vmin] w-[76vmin] rounded-full border border-dashed border-white/10"
-        />
 
         {/* Central Anchor Typography */}
         <motion.div
