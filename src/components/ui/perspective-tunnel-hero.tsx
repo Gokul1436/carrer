@@ -7,7 +7,7 @@ import {
   type MotionValue,
 } from 'framer-motion';
 import { useEffect, useRef, useState } from 'react';
-import { profile, videoReels, type VideoReel } from '@/data/portfolio';
+import { archiveMedia, profile, type VideoReel } from '@/data/portfolio';
 import { useFinePointer, useReducedMotionPref } from '@/hooks/useMedia';
 import { PosterBackdrop } from '@/components/Poster';
 
@@ -21,7 +21,7 @@ interface TunnelCardData {
   index: number;
 }
 
-const TUNNEL_CARDS: TunnelCardData[] = videoReels.map((reel, i) => {
+const TUNNEL_CARDS: TunnelCardData[] = archiveMedia.map((reel, i) => {
   const goldenAngle = i * 137.5 * (Math.PI / 180);
   const radiusFactorX = 0.28 + (i % 3) * 0.08;
   const radiusFactorY = 0.25 + (i % 2) * 0.08;
@@ -114,7 +114,7 @@ function TunnelCard({ card, progress, pointer, total, stage, onSelect }: TunnelC
         opacity,
         zIndex: card.index + 1,
       }}
-      aria-label={`Watch ${card.reel.title}`}
+      aria-label={card.reel.kind === 'image' ? `View ${card.reel.title}` : `Watch ${card.reel.title}`}
       className="pointer-events-auto absolute left-1/2 top-1/2 aspect-[9/16] cursor-pointer select-none text-left will-change-transform"
     >
       <div className="group relative h-full w-full overflow-hidden rounded-2xl bg-ink-2 shadow-[0_25px_70px_rgba(0,0,0,0.85)] ring-1 ring-white/15 transition-all duration-500 hover:ring-crimson-2/75 hover:shadow-[0_25px_70px_rgba(229,19,43,0.35)]">
@@ -129,12 +129,9 @@ function TunnelCard({ card, progress, pointer, total, stage, onSelect }: TunnelC
         </PosterBackdrop>
 
         <div className="absolute inset-0 flex flex-col justify-between bg-gradient-to-t from-black/90 via-black/15 to-transparent p-3.5 sm:p-4">
-          <div className="flex items-center justify-between">
-            <span className="rounded-full border border-white/15 bg-black/55 px-2 py-0.5 text-[9px] font-bold uppercase tracking-[0.2em] text-bone backdrop-blur-md">
-              {card.reel.episode}
-            </span>
+          <div className="flex items-center justify-end">
             <span className="flex h-7 w-7 items-center justify-center rounded-full border border-white/30 bg-black/50 text-[10px] text-bone backdrop-blur-md transition group-hover:border-bone group-hover:bg-bone group-hover:text-ink">
-              ▶
+              {card.reel.kind === 'image' ? '⤢' : '▶'}
             </span>
           </div>
 
@@ -202,11 +199,11 @@ export default function PerspectiveTunnelHero({
     return (
       <section id="showcase" className="gutter py-16">
         <p className="mb-2 text-[11px] font-bold uppercase tracking-[0.35em] text-crimson-2">
-          {profile.firstName} · 3D Showcase
+          A Visual Archive · {profile.displayName}
         </p>
-        <h2 className="mb-8 font-display text-5xl tracking-wide text-bone">INTO THE FRAME.</h2>
+        <h2 className="mb-8 font-display text-5xl tracking-wide text-bone">THE JOURNEY IN FRAMES.</h2>
         <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
-          {videoReels.map((reel) => (
+          {archiveMedia.map((reel) => (
             <button
               key={reel.id}
               type="button"
@@ -258,15 +255,15 @@ export default function PerspectiveTunnelHero({
           className="pointer-events-none z-0 flex max-w-xl flex-col items-center px-6 text-center"
         >
           <p className="mb-3 text-[11px] font-bold uppercase tracking-[0.42em] text-crimson-2">
-            {profile.firstName} · Reel Archive
+            A Visual Archive · {profile.displayName}
           </p>
-          <h2 className="font-display text-[clamp(3.5rem,10vw,7.5rem)] leading-[0.86] tracking-wide text-bone">
-            INTO THE
+          <h2 className="font-display text-[clamp(3.2rem,9.2vw,7rem)] leading-[0.86] tracking-wide text-bone">
+            THE JOURNEY
             <br />
-            <span className="shimmer-text">FRAME.</span>
+            <span className="shimmer-text">IN FRAMES.</span>
           </h2>
-          <p className="mt-4 max-w-[36ch] text-sm font-light text-mist sm:text-base">
-            Scroll to fly through the 3D showcase — click any reel to watch.
+          <p className="mt-4 max-w-[38ch] text-sm font-light text-mist sm:text-base">
+            Moments of courage, reinvention, and purpose — from vision to impact.
           </p>
         </motion.div>
 

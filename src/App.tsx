@@ -30,7 +30,7 @@ const VideoModal = lazy(() => import('./components/VideoModal'));
 
 type Stage = 'opening' | 'home';
 
-const STORAGE_KEY = 'sushmita-series-profile';
+const STORAGE_KEY = 'benita-series-profile';
 
 function readStoredProfile(): ProfileId | null {
   try {
@@ -52,7 +52,7 @@ export default function App() {
 function Series() {
   const stored = readStoredProfile();
   const [stage, setStage] = useState<Stage>('opening');
-  const [profileId, setProfileId] = useState<ProfileId>(stored ?? 'sushmita');
+  const [profileId, setProfileId] = useState<ProfileId>(stored ?? 'benita');
   const [playing, setPlaying] = useState(false);
   const [project, setProject] = useState<Project | null>(null);
   const [resumeOpen, setResumeOpen] = useState(false);

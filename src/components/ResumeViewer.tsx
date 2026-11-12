@@ -1,15 +1,15 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { achievements, certifications, education, experience, profile, projects, skillCategories } from '../data/portfolio';
+import { achievements, archiveChapters, certifications, education, experience, profile, projects, skillCategories } from '../data/portfolio';
 import { EASE, Magnetic, SectionHeading } from './fx';
 import GsapSplitText from './ui/GsapSplitText';
 import ParallaxLayer from './ui/ParallaxLayer';
 
-/** THE FULL STORY — a designed resume preview plus view / download actions. */
+/** THE FULL STORY — a designed founder dossier plus view / download actions. */
 export default function ResumeSection({ onView }: { onView: () => void }) {
   return (
     <>
-      <SectionHeading kicker="The screenplay" title="The Full Story" />
+      <SectionHeading kicker="Founder Dossier" title="The Full Story" />
       <div className="gutter grid gap-10 lg:grid-cols-[minmax(0,1fr)_320px] lg:gap-14">
         <ParallaxLayer yPercent={[3, -3]} desktopOnly>
           <motion.div
@@ -26,13 +26,13 @@ export default function ResumeSection({ onView }: { onView: () => void }) {
         <div className="lg:sticky lg:top-28 lg:self-start">
           <GsapSplitText
             as="p"
-            text="Every episode, on one page."
+            text="From vision to impact, on one page."
             mode="reveal"
             stagger={0.05}
             className="font-serif text-3xl italic leading-tight text-bone"
           />
           <p className="mt-3 text-sm leading-relaxed text-mist">
-            Education, training, projects, achievements and {certifications.length} certifications — view it here or take a copy with you.
+            Banking years, Madurai launch, Career HQ, Career with Beni, Connecting Dots Worldwide, and the birthday tribute — view it here or download the full PDF.
           </p>
           <div className="mt-6 flex flex-col gap-3">
             <Magnetic className="w-full">
@@ -42,25 +42,25 @@ export default function ResumeSection({ onView }: { onView: () => void }) {
                 onClick={onView}
                 className="flex min-h-12 w-full items-center justify-center gap-2 rounded-md bg-bone px-6 text-[15px] font-bold text-ink transition hover:bg-white"
               >
-                ▶ View Resume
+                ▶ View Founder PDF
               </button>
             </Magnetic>
             <Magnetic className="w-full">
               <a
                 href={profile.resumePdf}
-                download="Sushmita_Dasari_Resume.pdf"
+                download="Benita_Samson_Founder_Portfolio.pdf"
                 data-cursor="link"
                 className="glass flex min-h-12 w-full items-center justify-center gap-2 rounded-md px-6 text-[15px] font-semibold text-bone transition hover:bg-white/15"
               >
-                ⤓ Download Resume
+                ⤓ Download Founder PDF
               </a>
             </Magnetic>
           </div>
           <dl className="mt-8 grid grid-cols-3 gap-px overflow-hidden rounded-xl bg-white/10 text-center">
             {[
-              { v: education[0].score.replace('CGPA ', ''), k: 'CGPA' },
-              { v: String(projects.length), k: 'Originals' },
-              { v: String(certifications.length), k: 'Certs' },
+              { v: '50K+', k: 'Followers' },
+              { v: '120+', k: 'Videos' },
+              { v: '8→15', k: 'Team' },
             ].map((s) => (
               <div key={s.k} className="bg-ink-2 px-2 py-4">
                 <dd className="font-display text-3xl leading-none text-bone">{s.v}</dd>
@@ -103,26 +103,26 @@ export function ResumeSheet() {
       <div aria-hidden className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-crimson-2/70 to-transparent" />
       <header className="mb-8 flex flex-wrap items-end justify-between gap-4 border-b border-white/10 pb-6">
         <div>
-          <p className="text-[10px] font-bold tracking-[0.34em] text-smoke">STARRING</p>
+          <p className="text-[10px] font-bold tracking-[0.34em] text-smoke">FOUNDER &amp; CEO · CONNECTING DOTS WORLDWIDE</p>
           <h3 className="mt-1 font-display text-[clamp(1.9rem,4.4vw,3.2rem)] leading-[0.9] tracking-wide text-bone">{profile.fullName}</h3>
         </div>
         <div className="text-xs leading-relaxed text-mist sm:text-right">
           <a href={`mailto:${profile.email}`} className="block hover:text-bone">
-            {profile.email}
+            {profile.email} · {profile.phone}
           </a>
-          <a href={profile.links.linkedin} target="_blank" rel="noreferrer" className="hover:text-bone">
-            LinkedIn ↗
+          <a href={profile.links.portfolio} target="_blank" rel="noreferrer" className="hover:text-bone">
+            benitasamson.com ↗
           </a>
           {' · '}
-          <a href={profile.links.github} target="_blank" rel="noreferrer" className="hover:text-bone">
-            GitHub ↗
+          <a href={profile.links.careerhq} target="_blank" rel="noreferrer" className="hover:text-bone">
+            www.careerhq.in ↗
           </a>
         </div>
       </header>
 
       <div className="grid gap-x-10 md:grid-cols-[1.4fr_1fr]">
         <div>
-          <H>Education</H>
+          <H>Banking Career · Australia</H>
           {education.map((e) => (
             <div key={e.school} className="mb-4">
               <div className="flex flex-wrap justify-between gap-x-3">
@@ -137,9 +137,9 @@ export function ResumeSheet() {
             </div>
           ))}
 
-          <H>Work Experience</H>
+          <H>Entrepreneurial Journey</H>
           {experience.map((x) => (
-            <div key={x.company}>
+            <div key={x.company} className="mb-5">
               <div className="flex flex-wrap justify-between gap-x-3">
                 <p className="text-sm font-semibold text-bone">
                   {x.company} — {x.role}
@@ -157,20 +157,20 @@ export function ResumeSheet() {
             </div>
           ))}
 
-          <H>Projects</H>
+          <H>Flagship Ventures</H>
           {projects.map((p) => (
             <div key={p.id} className="mb-3">
               <div className="flex flex-wrap justify-between gap-x-3">
                 <p className="text-sm font-semibold text-bone">{p.title}</p>
                 <p className="text-xs text-smoke">{p.year}</p>
               </div>
-              <p className="text-xs text-mist">{p.stack.join(', ')}</p>
+              <p className="text-xs text-mist">{p.stack.join(' · ')}</p>
             </div>
           ))}
         </div>
 
         <div>
-          <H>Skills</H>
+          <H>Areas &amp; Initiatives</H>
           <div className="space-y-2">
             {skillCategories.map((c) => (
               <p key={c.id} className="text-xs leading-relaxed text-mist">
@@ -180,7 +180,7 @@ export function ResumeSheet() {
             ))}
           </div>
 
-          <H>Achievements</H>
+          <H>Key Milestones</H>
           <ul className="space-y-2">
             {achievements.map((a) => (
               <li key={a.id} className="text-xs leading-relaxed text-mist">
@@ -192,11 +192,18 @@ export function ResumeSheet() {
             ))}
           </ul>
 
-          <H>Certifications</H>
+          <H>The Journey in Frames</H>
+          <ul className="space-y-1.5">
+            {archiveChapters.map((ch) => (
+              <li key={ch.title} className="text-xs leading-relaxed text-mist">
+                <span className="font-semibold text-bone">{ch.title}:</span> {ch.detail}
+              </li>
+            ))}
+          </ul>
+
+          <H>Ecosystem Directory</H>
           <p className="text-xs leading-relaxed text-mist">
-            {Array.from(new Set(certifications.map((c) => c.issuer)))
-              .map((iss) => `${iss}: ${certifications.filter((c) => c.issuer === iss).map((c) => c.name).join(', ')}`)
-              .join(' · ')}
+            {certifications.map((c) => c.name).join(' · ')}
           </p>
         </div>
       </div>

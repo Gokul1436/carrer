@@ -1,10 +1,9 @@
 import { useRef } from 'react';
 import { motion, useMotionValue, useScroll, useSpring, useTransform } from 'framer-motion';
-import { achievements, certifications, education, profile, projects, type ProfileId } from '../data/portfolio';
+import { profile, type ProfileId } from '../data/portfolio';
 import { useFinePointer, useReducedMotionPref } from '../hooks/useMedia';
 import { useSmoothScroll } from '../hooks/smoothScroll';
 import { EASE, Magnetic, Particles } from './fx';
-import { SeriesMark } from './Poster';
 import ParallaxLayer from './ui/ParallaxLayer';
 import SoftAurora from './ui/SoftAurora';
 
@@ -37,16 +36,16 @@ export default function Hero({ onPlay, onResume, profileId }: { onPlay: () => vo
   const glowX = useTransform(px, [-1, 1], ['-6%', '6%']);
 
   const meta = [
-    education[0].period.split(' – ')[0].split(' ')[1] + ' – Present',
-    'B.Tech AI & ML',
-    `${projects.length} Originals`,
-    `${certifications.length} Certifications`,
+    'Connecting Dots Worldwide',
+    'Career HQ',
+    '50,000+ Followers',
+    'Team of 8 → 15',
   ];
 
   const floating = [
-    { text: education[0].score, sub: 'B.Tech AI & ML', pos: 'left-[2%] top-[30%]', depth: 1 },
-    { text: `${achievements[0].title}`, sub: achievements[0].org, pos: 'right-[0%] top-[18%]', depth: -1 },
-    { text: 'Java · React · Node.js', sub: 'Primary stack', pos: 'right-[4%] bottom-[24%]', depth: 0.6 },
+    { text: '50,000+ Followers', sub: 'Career with Beni · 120+ Videos', pos: 'left-[-5%] bottom-[16%]', depth: 1 },
+    { text: 'Career HQ', sub: 'Co-Founder & CEO · Oct 2025', pos: 'right-[1%] top-[16%]', depth: -1 },
+    { text: 'Connecting Dots', sub: 'Registered in Australia · 2025', pos: 'right-[1%] bottom-[12%]', depth: 0.6 },
   ];
 
   return (
@@ -60,9 +59,35 @@ export default function Hero({ onPlay, onResume, profileId }: { onPlay: () => vo
         my.set((e.clientY / window.innerHeight) * 2 - 1);
       }}
     >
-      {/* banner-video-2 main hero stage + subtle interactive SoftAurora accent */}
-      <ParallaxLayer yPercent={[0, -14]} start="top top" end="bottom top" scrub={0.8} className="pointer-events-none absolute inset-0">
-        <motion.div className="absolute inset-0" style={{ y: imgY, scale: imgScale, opacity: fade }}>
+      {/* left-side crimson red atmosphere + clean right-stage banner-video-2 */}
+      <ParallaxLayer yPercent={[0, -14]} start="top top" end="bottom top" scrub={0.8} className="pointer-events-none absolute inset-0 bg-[#140308]">
+        {/* Left-side rich red backdrop & interactive SoftAurora */}
+        <div
+          aria-hidden
+          className="absolute inset-0 bg-[radial-gradient(75%_90%_at_18%_52%,rgba(229,19,43,0.62),rgba(135,10,28,0.42)_42%,rgba(10,4,7,0.96)_78%)]"
+        />
+        <div className="pointer-events-none absolute inset-0">
+          <SoftAurora
+            speed={0.55}
+            scale={1.45}
+            brightness={1.05}
+            color1="#ff3d5a"
+            color2="#a80b2a"
+            bandHeight={0.58}
+            bandSpread={1.15}
+            spectrum={0.45}
+            tilt={-8}
+            opacity={0.52}
+            enableMouseInteraction={fine}
+            mouseInfluence={0.22}
+          />
+        </div>
+
+        {/* Right-aligned banner-video-2 kept natural with soft edge blending only */}
+        <motion.div
+          className="absolute inset-0 lg:left-auto lg:right-[-2vw] lg:w-[66vw] xl:w-[62vw] lg:[mask-image:linear-gradient(to_right,transparent_0%,black_24%,black_92%,transparent_100%)]"
+          style={{ y: imgY, scale: imgScale, opacity: fade }}
+        >
           <video
             src={profile.bannerVideo}
             autoPlay={!reduced}
@@ -71,29 +96,14 @@ export default function Hero({ onPlay, onResume, profileId }: { onPlay: () => vo
             playsInline
             preload="auto"
             aria-hidden
-            className="h-full w-full object-cover opacity-90 contrast-[1.06]"
+            className="h-full w-full object-cover object-[50%_16%]"
           />
-          <div className="pointer-events-none absolute inset-0 mix-blend-screen">
-            <SoftAurora
-              speed={0.55}
-              scale={1.45}
-              brightness={0.95}
-              color1="#ff3d5a"
-              color2="#8b0d3b"
-              bandHeight={0.54}
-              bandSpread={1.1}
-              spectrum={0.42}
-              tilt={-8}
-              opacity={0.22}
-              enableMouseInteraction={fine}
-              mouseInfluence={0.22}
-            />
-          </div>
           <div className="pointer-events-none absolute inset-x-0 bottom-0 h-44 bg-gradient-to-t from-ink to-transparent" />
         </motion.div>
+
         <motion.div aria-hidden className="absolute inset-0" style={{ x: glowX }}>
-          <div className="absolute right-[-10%] top-[-10%] h-[90vh] w-[80vw] rounded-full bg-[radial-gradient(closest-side,rgba(229,19,43,0.22),rgba(229,19,43,0.04)_55%,transparent)] blur-2xl lg:right-[-4%] lg:w-[60vw]" />
-          <div className="absolute bottom-[-20%] left-[-10%] h-[70vh] w-[60vw] rounded-full bg-[radial-gradient(closest-side,rgba(90,20,120,0.16),transparent)] blur-2xl" />
+          <div className="absolute left-[-10%] top-[6%] h-[84vh] w-[58vw] rounded-full bg-[radial-gradient(closest-side,rgba(229,19,43,0.48),rgba(165,12,38,0.18)_58%,transparent)] blur-3xl" />
+          <div className="absolute bottom-[-18%] left-[10%] h-[65vh] w-[50vw] rounded-full bg-[radial-gradient(closest-side,rgba(190,14,42,0.34),transparent)] blur-3xl" />
         </motion.div>
       </ParallaxLayer>
       <Particles className="z-[1]" />
@@ -103,9 +113,9 @@ export default function Hero({ onPlay, onResume, profileId }: { onPlay: () => vo
         <span className="light-streak left-[55%] top-[44%] w-[30vw]" style={{ animationDelay: '5.2s' }} />
       </div>
 
-      {/* floating UI chips over the right banner stage (no portrait image) */}
+      {/* floating UI chips framed around the right banner subject */}
       <motion.div
-        className="pointer-events-none absolute inset-x-0 top-12 z-[2] hidden h-[70svh] md:block lg:bottom-0 lg:left-auto lg:right-[3vw] lg:top-20 lg:h-auto lg:w-[46vw] xl:right-[6vw]"
+        className="pointer-events-none absolute inset-x-0 top-12 z-[4] hidden h-[70svh] md:block lg:bottom-0 lg:left-auto lg:right-[2vw] lg:top-20 lg:h-auto lg:w-[54vw] xl:right-[3vw] xl:w-[50vw]"
         style={{ y: imgY, opacity: fade }}
       >
         <div className="relative h-full w-full lg:h-[86vh]">
@@ -115,21 +125,24 @@ export default function Hero({ onPlay, onResume, profileId }: { onPlay: () => vo
         </div>
       </motion.div>
 
-      {/* readability gradients */}
-      <div aria-hidden className="absolute inset-x-0 top-[40svh] z-[3] h-[36svh] bg-gradient-to-b from-transparent via-ink/70 to-ink lg:hidden" />
-      <div aria-hidden className="absolute inset-0 z-[3] hidden bg-[linear-gradient(90deg,var(--color-ink)_0%,rgba(7,7,10,0.72)_34%,transparent_62%)] lg:block" />
-      <div aria-hidden className="absolute inset-x-0 bottom-0 z-[3] h-48 bg-gradient-to-t from-ink to-transparent" />
+      {/* readability gradients (top navbar + subtle left crimson scrim + bottom) */}
+      <div aria-hidden className="pointer-events-none absolute inset-x-0 top-0 z-[3] h-32 bg-gradient-to-b from-ink/90 via-ink/45 to-transparent" />
+      <div aria-hidden className="pointer-events-none absolute inset-x-0 top-[40svh] z-[3] h-[36svh] bg-gradient-to-b from-transparent via-ink/75 to-ink lg:hidden" />
+      <div aria-hidden className="pointer-events-none absolute inset-0 z-[3] hidden bg-[linear-gradient(90deg,rgba(28,4,10,0.42)_0%,rgba(16,3,7,0.3)_38%,rgba(7,7,10,0.2)_52%,transparent_66%)] lg:block" />
+      <div aria-hidden className="pointer-events-none absolute inset-x-0 bottom-0 z-[3] h-48 bg-gradient-to-t from-ink to-transparent" />
 
       {/* copy */}
       <motion.div
-        className="gutter relative z-[4] flex min-h-[100svh] flex-col justify-end pb-16 pt-[38svh] sm:pb-20 sm:pt-[42svh] lg:max-w-[52vw] lg:justify-center lg:pb-0 lg:pt-24"
+        className="gutter relative z-[4] flex min-h-[100svh] flex-col justify-end pb-16 pt-[42svh] sm:pb-20 sm:pt-[46svh] lg:max-w-[48vw] lg:justify-center lg:pb-0 lg:pt-24"
         style={{ y: textY, opacity: fade }}
         variants={container}
         initial="hidden"
         animate="show"
       >
-        <motion.div variants={item} className="mb-3 text-lg">
-          <SeriesMark />
+        <motion.div variants={item} className="mb-3">
+          <span className="inline-flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.34em] text-crimson-2">
+            Founder Profile <span className="text-mist/70">·</span> Connecting Dots
+          </span>
         </motion.div>
         <motion.h1 variants={item} className="font-display leading-[0.82] tracking-[0.02em] text-bone" style={{ fontSize: 'clamp(4rem, 12vw, 11rem)' }}>
           <span className="shimmer-text">{profile.firstName}</span>
@@ -139,7 +152,7 @@ export default function Hero({ onPlay, onResume, profileId }: { onPlay: () => vo
         </motion.p>
 
         <motion.div variants={item} className="mt-5 flex flex-wrap items-center gap-x-3 gap-y-2 text-[13px] font-medium text-mist">
-          <span className="rounded border border-white/25 px-1.5 py-px text-[10px] font-bold tracking-wider text-bone">AI·ML</span>
+          <span className="rounded border border-crimson-2/45 bg-crimson/15 px-1.5 py-px text-[10px] font-bold tracking-wider text-crimson-2">VISION</span>
           {meta.map((m, i) => (
             <span key={m} className="flex items-center gap-3">
               {i > 0 && <span className="h-1 w-1 rounded-full bg-smoke" />}
@@ -162,15 +175,15 @@ export default function Hero({ onPlay, onResume, profileId }: { onPlay: () => vo
               type="button"
               data-cursor="play"
               onClick={onPlay}
-              className="flex min-h-12 items-center gap-3 rounded-md bg-bone px-6 py-3 text-[15px] font-bold text-ink transition hover:bg-white sm:px-8"
+              className="flex min-h-12 items-center gap-3 rounded-md bg-bone px-6 py-3 text-[15px] font-bold text-ink shadow-[0_0_36px_rgba(229,19,43,0.35)] transition hover:bg-white sm:px-8"
             >
-              <span className="text-lg">▶</span> Play Intro
+              <span className="text-lg text-crimson">▶</span> Play Intro
             </button>
           </Magnetic>
           <Magnetic>
             {profileId === 'recruiter' ? (
               <button type="button" onClick={onResume} className="glass flex min-h-12 items-center gap-3 rounded-md px-6 py-3 text-[15px] font-semibold text-bone transition hover:bg-white/15 sm:px-8">
-                <span className="text-lg">⤓</span> View Resume
+                <span className="text-lg">⤓</span> View Profile PDF
               </button>
             ) : (
               <button
@@ -178,7 +191,7 @@ export default function Hero({ onPlay, onResume, profileId }: { onPlay: () => vo
                 onClick={() => scrollTo('#originals')}
                 className="glass flex min-h-12 items-center gap-3 rounded-md px-6 py-3 text-[15px] font-semibold text-bone transition hover:bg-white/15 sm:px-8"
               >
-                <span className="text-xl leading-none">＋</span> My Work
+                <span className="text-xl leading-none">＋</span> Ventures
               </button>
             )}
           </Magnetic>
@@ -205,7 +218,7 @@ function FloatChip({ text, sub, pos, depth, index, mx, my }: { text: string; sub
   const y = useTransform(my, (n: number) => n * depth);
   return (
     <motion.div
-      className={`glass absolute hidden rounded-xl px-4 py-2.5 md:block ${pos}`}
+      className={`absolute hidden rounded-xl border border-crimson-2/25 bg-[#12060a]/85 px-4 py-2.5 shadow-[0_14px_36px_rgba(0,0,0,0.6),0_0_24px_rgba(229,19,43,0.14)] backdrop-blur-md md:block ${pos}`}
       style={{ x, y }}
       initial={{ opacity: 0, filter: 'blur(6px)' }}
       animate={{ opacity: 1, filter: 'blur(0px)' }}

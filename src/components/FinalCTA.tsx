@@ -48,10 +48,10 @@ export default function FinalCTA({ onReplay }: { onReplay: () => void }) {
   }, []);
 
   const ctas = [
-    { label: "Let's Build", href: `mailto:${profile.email}?subject=${encodeURIComponent("Let's build something")}`, primary: true, cursor: 'play' },
-    { label: 'LinkedIn', href: profile.links.linkedin, cursor: 'link' },
-    { label: 'GitHub', href: profile.links.github, cursor: 'link' },
-    { label: 'Email', href: `mailto:${profile.email}`, cursor: 'link' },
+    { label: "Connect · Email", href: `mailto:${profile.email}?subject=${encodeURIComponent("Connecting with Benita Samson")}`, primary: true, cursor: 'play' },
+    { label: 'Career HQ', href: profile.links.careerhq, cursor: 'link' },
+    { label: 'Instagram', href: profile.links.instagram, cursor: 'link' },
+    { label: `Call · ${profile.phone}`, href: `tel:${profile.phone}`, cursor: 'link' },
   ];
 
   return (
@@ -83,19 +83,19 @@ export default function FinalCTA({ onReplay }: { onReplay: () => void }) {
         whileInView={{ opacity: 1 }}
         viewport={{ once: true }}
       >
-        The Next Episode
+        Celebrating the Journey
       </motion.p>
       <ParallaxLayer yPercent={[10, -10]} scrub={1}>
         <h2
           ref={headlineRef}
           className="relative font-display leading-[0.85] text-bone will-change-transform"
-          style={{ fontSize: 'clamp(3.4rem, 13vw, 12rem)' }}
+          style={{ fontSize: 'clamp(3.2rem, 11vw, 10rem)' }}
         >
-          TO BE CONTINUED…
+          HAPPY BIRTHDAY, BENITA!
         </h2>
       </ParallaxLayer>
 
-      <div className="relative mt-12">
+      <div className="relative mt-10 max-w-2xl px-2">
         <GsapSplitText
           as="p"
           text={profile.displayName.toUpperCase()}
@@ -103,7 +103,10 @@ export default function FinalCTA({ onReplay }: { onReplay: () => void }) {
           stagger={0.07}
           className="font-sans text-2xl font-semibold tracking-[0.2em] text-bone sm:text-3xl"
         />
-        <p className="mt-2 text-xs font-semibold tracking-[0.4em] text-mist sm:text-sm">{profile.role.toUpperCase()}</p>
+        <p className="mt-2 text-xs font-semibold tracking-[0.35em] text-mist sm:text-sm">{profile.role.toUpperCase()}</p>
+        <p className="mt-5 text-sm leading-relaxed text-bone/75 sm:text-base">
+          A celebration of a woman who dared to dream beyond the familiar, found the courage to begin again, and continues to build with purpose. The journey continues.
+        </p>
       </div>
 
       <motion.div
@@ -156,7 +159,7 @@ export default function FinalCTA({ onReplay }: { onReplay: () => void }) {
           />
         </div>
         <p className="text-[11px] leading-relaxed text-smoke">
-          © {new Date().getFullYear()} {profile.displayName}. A personal, streaming-inspired portfolio — not affiliated with any streaming service.
+          © {new Date().getFullYear()} {profile.displayName} · Connecting Dots Worldwide · Career HQ ({profile.links.portfolio.replace('https://', '')})
         </p>
       </footer>
     </section>

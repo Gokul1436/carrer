@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
-import { videoReels, type VideoReel } from '../data/portfolio';
+import { archiveMedia, videoReels, type VideoReel } from '../data/portfolio';
 import { useScrollLock } from '../hooks/smoothScroll';
 import { EASE } from './fx';
 
@@ -18,9 +18,10 @@ export default function VideoModal({
   useScrollLock(true);
   const closeBtn = useRef<HTMLButtonElement>(null);
 
-  const idx = videoReels.findIndex((r) => r.id === reel.id);
-  const prevReel = idx > 0 ? videoReels[idx - 1] : null;
-  const nextReel = idx >= 0 && idx < videoReels.length - 1 ? videoReels[idx + 1] : null;
+  const list = archiveMedia.some((r) => r.id === reel.id) ? archiveMedia : videoReels;
+  const idx = list.findIndex((r) => r.id === reel.id);
+  const prevReel = idx > 0 ? list[idx - 1] : null;
+  const nextReel = idx >= 0 && idx < list.length - 1 ? list[idx + 1] : null;
 
   useEffect(() => {
     const prevFocus = document.activeElement as HTMLElement | null;
@@ -95,7 +96,7 @@ export default function VideoModal({
         </div>
       </div>
 
-      {/* Vertical Reel Player Frame */}
+      {/* Media Frame (Photo Lightbox or Vertical Reel Player) */}
       <div className="gutter flex flex-1 items-center justify-center pb-6 pt-2">
         <motion.div
           key={reel.id}
@@ -104,27 +105,39 @@ export default function VideoModal({
           exit={{ opacity: 0, scale: 0.96 }}
           transition={{ duration: 0.4, ease: EASE }}
           onClick={(e) => e.stopPropagation()}
-          className="relative flex h-[min(80vh,760px)] aspect-[9/16] max-w-[92vw] items-center justify-center overflow-hidden rounded-2xl bg-black ring-1 ring-white/15 shadow-[0_30px_90px_rgba(0,0,0,0.85)]"
+          className={`relative flex items-center justify-center overflow-hidden rounded-2xl bg-black ring-1 ring-white/15 shadow-[0_30px_90px_rgba(0,0,0,0.85)] ${
+            reel.kind === 'image'
+              ? 'max-h-[82vh] max-w-[92vw]'
+              : 'h-[min(80vh,760px)] aspect-[9/16] max-w-[92vw]'
+          }`}
         >
-          <video
-            key={reel.videoUrl}
-            src={reel.videoUrl}
-            poster={reel.posterUrl}
-            controls
-            autoPlay
-            playsInline
-            onTimeUpdate={(e) => {
-              const v = e.currentTarget;
-              if (v.duration > 0) {
-                onProgress?.(reel.id, Math.min(1, v.currentTime / v.duration));
-              }
-            }}
-            onEnded={() => {
-              onProgress?.(reel.id, 1);
-              if (nextReel) onSwitch(nextReel);
-            }}
-            className="h-full w-full object-contain"
-          />
+          {reel.kind === 'image' ? (
+            <img
+              src={reel.videoUrl}
+              alt={reel.title}
+              className="max-h-[82vh] max-w-[92vw] object-contain"
+            />
+          ) : (
+            <video
+              key={reel.videoUrl}
+              src={reel.videoUrl}
+              poster={reel.posterUrl}
+              controls
+              autoPlay
+              playsInline
+              onTimeUpdate={(e) => {
+                const v = e.currentTarget;
+                if (v.duration > 0) {
+                  onProgress?.(reel.id, Math.min(1, v.currentTime / v.duration));
+                }
+              }}
+              onEnded={() => {
+                onProgress?.(reel.id, 1);
+                if (nextReel) onSwitch(nextReel);
+              }}
+              className="h-full w-full object-contain"
+            />
+          )}
         </motion.div>
       </div>
     </motion.div>

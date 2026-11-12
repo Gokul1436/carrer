@@ -1,5 +1,5 @@
 import { useLayoutEffect, useRef } from 'react';
-import { achievements, certifications } from '../data/portfolio';
+import { achievements, certifications, teamMembers } from '../data/portfolio';
 import { SectionHeading, Tilt } from './fx';
 import { RailButtons } from './Rail';
 import { GSAP_EASE, gsap } from '../lib/gsap';
@@ -72,7 +72,7 @@ export default function Achievements() {
 
   return (
     <div ref={wrapRef}>
-      <SectionHeading kicker="Awards season" title="Top Moments" />
+      <SectionHeading kicker="Ecosystem & People" title="Impact & Ventures" />
 
       <div className="gutter grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 [perspective:1400px]">
         {achievements.map((a) => (
@@ -99,7 +99,7 @@ export default function Achievements() {
                     data-cursor="link"
                     className="relative mt-auto inline-flex min-h-10 items-center gap-1 pt-5 text-xs font-semibold tracking-wide text-bone underline decoration-[#d9b46a]/60 underline-offset-4 hover:decoration-[#d9b46a]"
                   >
-                    View certificate ↗
+                    View more ↗
                   </a>
                 )}
               </article>
@@ -108,14 +108,14 @@ export default function Achievements() {
         ))}
       </div>
 
-      {/* certifications rail */}
+      {/* Connecting Dots Ecosystem & Media rail */}
       <div className="mt-16">
         <div className="gutter mb-2 flex flex-wrap items-end justify-between gap-2">
           <h3 className="font-sans text-lg font-semibold text-bone sm:text-2xl">
-            Certified <span className="text-mist">· {certifications.length} credentials</span>
+            Connecting Dots Ecosystem <span className="text-mist">· {certifications.length} ventures &amp; media</span>
           </h3>
           <ParallaxLayer xPercent={[-4, 4]} scrub={1} desktopOnly>
-            <p className="text-xs text-smoke">{issuers.join(' · ')}</p>
+            <p className="text-xs text-smoke">{issuers.slice(0, 4).join(' · ')}</p>
           </ParallaxLayer>
         </div>
         <div className="group/rail relative">
@@ -125,13 +125,13 @@ export default function Achievements() {
                 key={c.name}
                 data-cert-card
                 href={c.link}
-                target="_blank"
-                rel="noreferrer"
+                target={c.link.startsWith('http') ? '_blank' : undefined}
+                rel={c.link.startsWith('http') ? 'noreferrer' : undefined}
                 data-cursor="link"
-                className="group relative flex w-[230px] shrink-0 snap-start flex-col justify-between rounded-xl bg-ink-2 p-4 ring-1 ring-white/10 transition hover:-translate-y-1 hover:ring-white/30"
+                className="group relative flex w-[250px] shrink-0 snap-start flex-col justify-between rounded-xl bg-ink-2 p-4 ring-1 ring-white/10 transition hover:-translate-y-1 hover:ring-white/30"
               >
                 <div className="flex items-center justify-between">
-                  <span className="text-[10px] font-bold uppercase tracking-[0.24em] text-crimson-2">{c.issuer}</span>
+                  <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-crimson-2">{c.issuer}</span>
                   <span className="text-sm text-smoke transition group-hover:text-bone">↗</span>
                 </div>
                 <p className="mt-6 text-sm font-medium leading-snug text-bone">{c.name}</p>
@@ -139,6 +139,23 @@ export default function Achievements() {
             ))}
           </div>
           <RailButtons rail={rail} />
+        </div>
+      </div>
+
+      {/* Leadership & Team (8 today → 15 in the vision) */}
+      <div className="gutter mt-14">
+        <div className="mb-4 flex flex-wrap items-end justify-between gap-2">
+          <h3 className="font-sans text-lg font-semibold text-bone sm:text-2xl">
+            Leadership &amp; Team <span className="text-mist">· Eight people today. A team of fifteen in the vision.</span>
+          </h3>
+        </div>
+        <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+          {teamMembers.map((m) => (
+            <div key={m.name} className="rounded-xl bg-ink-2 p-4 ring-1 ring-white/10">
+              <p className="font-display text-2xl leading-none tracking-wide text-bone">{m.name}</p>
+              <p className="mt-1.5 text-[11px] font-semibold uppercase tracking-[0.18em] text-crimson-2">{m.role}</p>
+            </div>
+          ))}
         </div>
       </div>
     </div>

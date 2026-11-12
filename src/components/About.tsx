@@ -9,10 +9,10 @@ import ParallaxLayer from './ui/ParallaxLayer';
 export default function About() {
   const rightColRef = useRef<HTMLDivElement>(null);
   const facts = [
-    { k: 'Now', v: 'B.Tech, AI & ML', s: `${education[0].school} · ${education[0].score}` },
-    { k: 'Training', v: `${experience[0].role}, ${experience[0].company}`, s: experience[0].period },
-    { k: 'Primary language', v: 'Java', s: 'with Python, C, C++' },
-    { k: 'Based in', v: profile.location, s: 'India' },
+    { k: 'Australian Banking', v: `${education[0].score} · NAB & CBA`, s: 'Walked away to build her own path' },
+    { k: 'Madurai Launch', v: experience[2].company, s: 'Feb 2025 · Founding team of 4' },
+    { k: 'Shared Brand', v: `${experience[1].company} (with Gandhi)`, s: 'Logo created 15 October 2025' },
+    { k: 'Parent Company', v: experience[0].company, s: profile.location },
   ];
 
   useLayoutEffect(() => {
@@ -66,7 +66,7 @@ export default function About() {
 
   return (
     <>
-      <SectionHeading kicker="The Pilot" title="About Me" />
+      <SectionHeading kicker="The Woman Beyond the Vision" title="Founder Introduction" />
       <div className="gutter grid items-center gap-10 lg:grid-cols-[minmax(0,5fr)_minmax(0,6fr)] lg:gap-16">
         <ParallaxLayer yPercent={[-6, 6]} desktopOnly className="mx-auto w-full max-w-md lg:max-w-none">
           <motion.div
@@ -80,9 +80,7 @@ export default function About() {
             <div className="absolute inset-0 bg-[radial-gradient(80%_60%_at_50%_30%,#5a0b1b,#14060a_60%,#07070a)]" />
             <div className="absolute inset-0 opacity-50 [background-image:repeating-linear-gradient(90deg,rgba(255,255,255,0.03)_0px,rgba(255,255,255,0.03)_1px,transparent_1px,transparent_28px)]" />
             <img
-              src="/assets/portrait-720.webp"
-              srcSet={profile.portrait.srcSet}
-              sizes="(max-width: 1024px) 90vw, 40vw"
+              src={profile.portrait.src}
               alt={profile.portrait.alt}
               loading="lazy"
               className="absolute bottom-0 left-1/2 h-[92%] w-auto max-w-none -translate-x-1/2 object-contain object-bottom"
@@ -90,10 +88,10 @@ export default function About() {
             <div className="absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-black/90 to-transparent" />
             <div className="absolute bottom-5 left-5 right-5 flex items-end justify-between">
               <div>
-                <p className="text-[10px] font-bold tracking-[0.3em] text-crimson-2">STARRING</p>
+                <p className="text-[10px] font-bold tracking-[0.3em] text-crimson-2">FOUNDER &amp; CEO</p>
                 <p className="font-display text-3xl leading-none text-bone">{profile.displayName}</p>
               </div>
-              <span className="rounded border border-white/30 px-1.5 text-[10px] font-bold text-bone">S01–S05</span>
+              <span className="rounded border border-white/30 px-1.5 text-[10px] font-bold text-bone">VISION → IMPACT</span>
             </div>
           </div>
         </Tilt>
@@ -103,13 +101,13 @@ export default function About() {
         <div ref={rightColRef}>
           <GsapSplitText
             as="p"
-            text={`“${profile.intro}”`}
+            text={`“${profile.quote}”`}
             mode="reveal"
             stagger={0.03}
             duration={0.85}
             className="font-serif text-[clamp(1.6rem,3.2vw,2.6rem)] italic leading-[1.15] text-bone"
           />
-          <p className="mt-4 text-sm text-mist">— {profile.fullName}</p>
+          <p className="mt-4 text-sm text-mist">— {profile.fullName}, Founder &amp; CEO</p>
 
           <dl className="mt-10 grid gap-px overflow-hidden rounded-xl bg-white/10 sm:grid-cols-2">
             {facts.map((f) => (
@@ -122,7 +120,7 @@ export default function About() {
           </dl>
 
           <div className="mt-8">
-            <p className="mb-3 text-[10px] font-bold uppercase tracking-[0.28em] text-smoke">Interests</p>
+            <p className="mb-3 text-[10px] font-bold uppercase tracking-[0.28em] text-smoke">Ecosystem Pillars</p>
             <div className="flex flex-wrap gap-2">
               {profile.interests.map((i) => (
                 <span key={i} data-about-interest className="glass rounded-full px-3 py-1.5 text-xs font-medium text-bone">
